@@ -7,12 +7,14 @@ node_modules/
 .yarn/
 .pnp/
 .pnp.js
+package-lock.json
 
 # ============================================
 # Build outputs and artifacts
 # ============================================
 dist/
 out/
+out-*
 bin/
 build/
 *.vsix
@@ -96,6 +98,7 @@ jetbrains/plugin/build/distributions/
 .lancedb/
 lancedb-data/
 qdrant-data/
+qdrant_storage/
 vector-store-data/
 code-index/
 
@@ -127,6 +130,7 @@ lerna-debug.log*
 .env.*.local
 .env.production
 .env.development
+!.env.*.sample
 *.key
 *.pem
 *.p12
@@ -135,6 +139,7 @@ lerna-debug.log*
 *.cer
 secrets/
 .secrets/
+.secrets
 
 # ============================================
 # IDE - VSCode
@@ -185,6 +190,8 @@ coverage/
 test-results/
 playwright-report/
 playwright/.cache/
+mock/
+.test_env
 
 # ============================================
 # Temporary files and caches
@@ -224,6 +231,8 @@ temp/
 .dynamodb/
 .tern-port
 .vscode-test/
+.vite-port
+.docker-cache/
 
 # ============================================
 # Large generated files
@@ -233,6 +242,7 @@ storybook-static/
 storybook-build/
 
 # Documentation builds
+docs/_site/
 docs/.vuepress/dist/
 docs/.vitepress/dist/
 docs/build/
@@ -289,6 +299,40 @@ datasets/
 *.dll
 *.a
 *.o
+
+# ============================================
+# Project-specific exclusions
+# ============================================
+# Local prompts and rules
+/local-prompts
+
+# kilocode_change
+.aider*
+
+# IntelliJ and Qodo plugin folders
+.qodo/
+
+# Vercel
+.vercel
+
+# Roo/Kilocode specific
+.roo/mcp.json
+
+# Nix / Direnv
+.direnv
+
+# Exclude Conport Directory (MCP server)
+context_portal/
+
+# Submodules
+deps/vscode/*
+!deps/vscode/.git
+
+# Act Secret Files
+.secrets
+
+# Architect plans
+plans/
 
 # ============================================
 # Keep these important files
