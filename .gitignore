@@ -1,53 +1,321 @@
-.pnpm-store
-dist
-out
-out-*
-node_modules
+# ============================================
+# Dependencies
+# ============================================
+node_modules/
+.pnpm-store/
+.npm/
+.yarn/
+.pnp/
+.pnp.js
 package-lock.json
-coverage/
-mock/
-.DS_Store
-*.orig
 
-# Builds
+# ============================================
+# Build outputs and artifacts
+# ============================================
+dist/
+out/
+out-*
 bin/
-bin-unpacked/
+build/
 *.vsix
+*.vsix.sig
+src/dist/
+bin-unpacked/
+*.tgz
+*.zip
+*.tar.gz
+*.tar
+*.rar
+*.7z
 
+# IntelliJ Plugin builds
+jetbrains/plugin/build/
+jetbrains/plugin/.gradle/
+jetbrains/plugin/plugins/
+jetbrains/plugin/prodDep.txt
+jetbrains/plugin/platform.zip
+jetbrains/resources/
+jetbrains/plugin/build/distributions/
+
+# VS Code extension builds
+.vscode-test/
+*.code-workspace
+
+# ============================================
+# Large binary files and archives
+# ============================================
+# Large media files
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.webm
+*.flv
+*.wmv
+*.mpg
+*.mpeg
+*.3gp
+
+# Large image files (keep small ones, ignore large)
+*.psd
+*.ai
+*.eps
+*.raw
+*.cr2
+*.nef
+*.orf
+*.sr2
+
+# Large audio files
+*.wav
+*.flac
+*.aac
+*.ogg
+*.wma
+*.m4a
+
+# Large documents
+*.pdf
+*.doc
+*.docx
+*.xls
+*.xlsx
+*.ppt
+*.pptx
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+*.mdb
+*.accdb
+
+# ============================================
+# Local data stores (LanceDB, Qdrant, etc.)
+# ============================================
+*.lance
+*.lancedb
+.lancedb/
+lancedb-data/
+qdrant-data/
+qdrant_storage/
+vector-store-data/
+code-index/
+
+# ============================================
+# TypeScript and compilation
+# ============================================
+*.tsbuildinfo
+*.d.ts.map
+*.js.map
+*.map
+
+# ============================================
+# Logs
+# ============================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.log.*
+
+# ============================================
+# Environment variables and secrets
+# ============================================
+.env
+.env.local
+.env.*.local
+.env.production
+.env.development
+!.env.*.sample
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.cer
+secrets/
+.secrets/
+.secrets
+
+# ============================================
+# IDE - VSCode
+# ============================================
+.vscode/settings.json
+.vscode/launch.json
+.vscode/extensions.json
+.vscode/*.code-snippets
+.vscode/tasks.json
+.history/
+*.swp
+*.swo
+*.code-workspace
+
+# ============================================
+# IDE - JetBrains
+# ============================================
+.idea/
+*.iml
+*.iws
+*.ipr
+.idea_modules/
+out/
+*.ipr
+*.iws
+
+# ============================================
+# OS files
+# ============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# ============================================
+# Testing and coverage
+# ============================================
+coverage/
+.nyc_output/
+*.lcov
+.jest/
+test-results/
+playwright-report/
+playwright/.cache/
+mock/
+.test_env
+
+# ============================================
+# Temporary files and caches
+# ============================================
+*.tmp
+*.temp
+.cache/
+.parcel-cache/
+.temp/
+tmp/
+temp/
+*.bak
+*.backup
+*.old
+*.orig
+*.save
+*.swp
+*.swo
+*~
+
+# ============================================
+# Package manager locks (optional - uncomment if you want to ignore)
+# ============================================
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# ============================================
+# Turbo and build tools
+# ============================================
+.turbo/
+.next/
+.nuxt/
+.vuepress/dist/
+.serverless/
+.fusebox/
+.dynamodb/
+.tern-port
+.vscode-test/
+.vite-port
+.docker-cache/
+
+# ============================================
+# Large generated files
+# ============================================
+# Storybook builds
+storybook-static/
+storybook-build/
+
+# Documentation builds
+docs/_site/
+docs/.vuepress/dist/
+docs/.vitepress/dist/
+docs/build/
+
+# ============================================
+# Platform-specific large files
+# ============================================
+# Windows
+*.exe
+*.msi
+*.dll
+*.lib
+*.obj
+*.pdb
+
+# macOS
+*.dmg
+*.app
+*.framework
+
+# Linux
+*.deb
+*.rpm
+*.AppImage
+*.snap
+
+# ============================================
+# Git LFS pointer files (if not using LFS)
+# ============================================
+# Uncomment if you're not using Git LFS
+# *.zip
+# *.vsix
+# platform.zip
+
+# ============================================
+# Large data files
+# ============================================
+*.csv
+*.tsv
+*.json.bak
+*.json.backup
+data/
+datasets/
+*.dump
+*.sql.gz
+
+# ============================================
+# Compiled binaries
+# ============================================
+*.exe
+*.bin
+*.so
+*.dylib
+*.dll
+*.a
+*.o
+
+# ============================================
+# Project-specific exclusions
+# ============================================
 # Local prompts and rules
 /local-prompts
 
-# Test environment
-.test_env
-.vscode-test/
-
-# Docs
-docs/_site/
-
-# Dotenv
-.env
-.env.*
-!.env.*.sample
-
-# Logging
-logs
-*.log
-
-# Vite development
-.vite-port
-
 # kilocode_change
-.history/
 .aider*
-.docker-cache/
-
-# Turborepo
-.turbo
 
 # IntelliJ and Qodo plugin folders
-.idea/
 .qodo/
+
+# Vercel
 .vercel
+
+# Roo/Kilocode specific
 .roo/mcp.json
 
 # Nix / Direnv
@@ -60,14 +328,16 @@ context_portal/
 deps/vscode/*
 !deps/vscode/.git
 
-# Qdrant
-qdrant_storage/
-
-# allow multiple local clones with different workspaces with different colors
-# to make it easier to work on features in parallel
-*.code-workspace
-
 # Act Secret Files
 .secrets
+
 # Architect plans
 plans/
+
+# ============================================
+# Keep these important files
+# ============================================
+# !package.json
+# !package-lock.json (if you want to track it)
+# !pnpm-lock.yaml (if you want to track it)
+# !yarn.lock (if you want to track it)
