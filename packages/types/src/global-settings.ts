@@ -235,6 +235,13 @@ export const globalSettingsSchema = z.object({
 	hasOpenedModeSelector: z.boolean().optional(),
 	lastModeExportPath: z.string().optional(),
 	lastModeImportPath: z.string().optional(),
+	// kilocode_change start: SSL verification setting
+	/**
+	 * Whether to verify SSL certificates for HTTPS requests
+	 * @default false (SSL verification disabled by default)
+	 */
+	sslVerificationEnabled: z.boolean().optional(),
+	// kilocode_change end
 })
 
 export type GlobalSettings = z.infer<typeof globalSettingsSchema>

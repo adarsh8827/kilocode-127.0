@@ -50,6 +50,7 @@ import { SettingsSyncService } from "./services/settings-sync/SettingsSyncServic
 import { ManagedIndexer } from "./services/code-index/managed/ManagedIndexer" // kilocode_change
 import { flushModels, getModels, initializeModelCacheRefresh } from "./api/providers/fetchers/modelCache"
 import { kilo_initializeSessionManager } from "./shared/kilocode/cli-sessions/extension/session-manager-utils" // kilocode_change
+import { configureAxiosSSL } from "./utils/axios-config" // kilocode_change
 
 // kilocode_change start
 async function findKilocodeTokenFromAnyProfile(provider: ClineProvider): Promise<string | undefined> {
@@ -158,6 +159,16 @@ export async function activate(context: vscode.ExtensionContext) {
 	}
 
 	const contextProxy = await ContextProxy.getInstance(context)
+
+	// kilocode_change start: Configure axios SSL verification globally
+	configureAxiosSSL(contextProxy)
+	// Listen for SSL verification setting changes
+	context.globalState.onDidChange((e) => {
+		if (e.key === "sslVerificationEnabled") {
+			configureAxiosSSL(contextProxy)
+		}
+	})
+	// kilocode_change end
 
 	// Initialize code index managers for all workspace folders.
 	const codeIndexManagers: CodeIndexManager[] = []
