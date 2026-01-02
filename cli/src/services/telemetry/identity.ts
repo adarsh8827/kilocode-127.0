@@ -6,10 +6,10 @@
 import * as fs from "fs-extra"
 import * as path from "path"
 import * as crypto from "crypto"
+import * as os from "os"
 import { KiloCodePaths } from "../../utils/paths.js"
 import { logs } from "../logs.js"
 import { getAppUrl } from "@roo-code/types"
-import { machineIdSync } from "node-machine-id"
 
 /**
  * User identity structure
@@ -219,7 +219,14 @@ export class IdentityManager {
 	 */
 	private getMachineId(): string {
 		try {
-			return machineIdSync()
+			// Use hostname + platform + architecture as machine identifier
+			const hostname = os.hostname()
+			const platform = os.platform()
+			const arch = os.arch()
+			const combined = `${hostname}-${platform}-${arch}`
+
+			// Hash the combined string for privacy
+			return crypto.createHash("sha256").update(combined).digest("hex").substring(0, 16)
 		} catch (error) {
 			logs.warn("Failed to get machine ID", "IdentityManager", { error })
 			return "unknown"
@@ -243,13 +250,13 @@ export class IdentityManager {
 	/**
 	 * Validate stored identity data
 	 */
-	private isValidStoredIdentity(data: unknown): data is StoredIdentity {
+	private isValidStoredIdentity(data: any): data is StoredIdentity {
 		return (
 			typeof data === "object" &&
 			data !== null &&
-			typeof (data as Record<string, unknown>).cliUserId === "string" &&
-			typeof (data as Record<string, unknown>).createdAt === "number" &&
-			typeof (data as Record<string, unknown>).lastUsed === "number"
+			typeof data.cliUserId === "string" &&
+			typeof data.createdAt === "number" &&
+			typeof data.lastUsed === "number"
 		)
 	}
 

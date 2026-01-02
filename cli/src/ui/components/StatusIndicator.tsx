@@ -8,7 +8,6 @@ import { Box, Text } from "ink"
 import { useHotkeys } from "../../state/hooks/useHotkeys.js"
 import { useTheme } from "../../state/hooks/useTheme.js"
 import { HotkeyBadge } from "./HotkeyBadge.js"
-import { ThinkingAnimation } from "./ThinkingAnimation.js"
 import { useAtomValue } from "jotai"
 import { isStreamingAtom } from "../../state/atoms/ui.js"
 import { hasResumeTaskAtom } from "../../state/atoms/extension.js"
@@ -44,7 +43,7 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({ disabled = fal
 		<Box borderStyle="round" borderColor={theme.ui.border.default} paddingX={1} justifyContent="space-between">
 			{/* Status text on the left */}
 			<Box>
-				{isStreaming && <ThinkingAnimation />}
+				{isStreaming && <Text color={theme.ui.text.dimmed}>Thinking...</Text>}
 				{hasResumeTask && <Text color={theme.ui.text.dimmed}>Task ready to resume</Text>}
 			</Box>
 

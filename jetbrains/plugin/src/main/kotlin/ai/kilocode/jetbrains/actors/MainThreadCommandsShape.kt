@@ -6,7 +6,6 @@ package ai.kilocode.jetbrains.actors
 
 import ai.kilocode.jetbrains.commands.CommandRegistry
 import ai.kilocode.jetbrains.commands.ICommand
-import ai.kilocode.jetbrains.commands.registerSetContextCommands
 import ai.kilocode.jetbrains.editor.registerOpenEditorAPICommands
 import ai.kilocode.jetbrains.terminal.registerTerminalAPICommands
 import ai.kilocode.jetbrains.util.doInvokeMethod
@@ -69,7 +68,6 @@ class MainThreadCommands(val project: Project) : MainThreadCommandsShape {
     init {
         registerOpenEditorAPICommands(project, registry)
         registerTerminalAPICommands(project, registry)
-        registerSetContextCommands(project, registry)
         // TODO other commands
     }
 

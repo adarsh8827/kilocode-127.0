@@ -15,15 +15,6 @@ export interface ToolMessageProps extends MessageComponentProps {
 }
 
 /**
- * Batch diff item structure
- */
-export interface BatchDiffItem {
-	path: string
-	isProtected?: boolean
-	diff?: string
-}
-
-/**
  * Parsed tool data structure
  */
 export interface ToolData {
@@ -35,7 +26,7 @@ export interface ToolData {
 	isProtected?: boolean
 	isOutsideWorkspace?: boolean
 	batchFiles?: Array<{ path: string }>
-	batchDiffs?: Array<BatchDiffItem>
+	batchDiffs?: Array<any>
 	lineNumber?: number
 	regex?: string
 	filePattern?: string
@@ -47,7 +38,7 @@ export interface ToolData {
 	description?: string
 	source?: string
 	additionalFileCount?: number
-	fastApplyResult?: unknown
+	fastApplyResult?: any
 }
 
 /**
@@ -68,7 +59,7 @@ export interface McpServerData {
 	toolName?: string
 	arguments?: string
 	uri?: string
-	response?: unknown
+	response?: any
 }
 
 /**

@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react"
 import { useAtomValue } from "jotai"
 import { mergedMessagesAtom, type UnifiedMessage } from "../state/atoms/ui.js"
 import { outputJsonMessage } from "./utils/jsonOutput.js"
-import { useStdinJsonHandler } from "../state/hooks/useStdinJsonHandler.js"
 
 function getMessageKey(message: UnifiedMessage): string {
 	const baseKey = `${message.source}-${message.message.ts}`
@@ -11,16 +10,9 @@ function getMessageKey(message: UnifiedMessage): string {
 	return `${baseKey}-${content.length}-${partial}`
 }
 
-interface JsonRendererProps {
-	jsonInteractive?: boolean
-}
-
-export function JsonRenderer({ jsonInteractive = false }: JsonRendererProps) {
+export function JsonRenderer() {
 	const messages = useAtomValue(mergedMessagesAtom)
 	const lastOutputKeysRef = useRef<string[]>([])
-
-	// Enable stdin JSON handler for bidirectional communication
-	useStdinJsonHandler(jsonInteractive)
 
 	useEffect(() => {
 		const currentKeys = messages.map(getMessageKey)

@@ -4,11 +4,11 @@
 
 package ai.kilocode.jetbrains.actors
 
-import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.WindowManager
+import java.awt.Desktop
 import java.net.URI
 
 /**
@@ -73,22 +73,29 @@ class MainThreadWindow(val project: Project) : MainThreadWindowShape {
         try {
             logger.info("Opening URI: $uriString")
 
-            // Try to get URI string
-            val urlToOpen = if (uriString != null) {
-                uriString
+            // Try to get URI
+            val actualUri = if (uriString != null) {
+                try {
+                    URI(uriString)
+                } catch (e: Exception) {
+                    // If URI string is invalid, try to build from URI components
+                    createUriFromComponents(uri)
+                }
             } else {
-                // Build from URI components
-                val actualUri = createUriFromComponents(uri)
-                actualUri?.toString()
+                createUriFromComponents(uri)
             }
 
-            return if (urlToOpen != null) {
-                // Use IntelliJ's BrowserUtil which works reliably in JetBrains IDEs
-                BrowserUtil.browse(urlToOpen)
-                logger.info("Successfully opened URI in browser: $urlToOpen")
-                true
+            return if (actualUri != null) {
+                // Check if Desktop operation is supported
+                if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                    Desktop.getDesktop().browse(actualUri)
+                    true
+                } else {
+                    logger.warn("System does not support opening URI")
+                    false
+                }
             } else {
-                logger.warn("Cannot create valid URI from components: $uri")
+                logger.warn("Cannot create valid URI")
                 false
             }
         } catch (e: Exception) {

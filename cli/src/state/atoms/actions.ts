@@ -4,9 +4,9 @@
  */
 
 import { atom } from "jotai"
-import type { WebviewMessage, ProviderSettings, ClineAskResponse } from "../../types/messages.js"
+import type { WebviewMessage } from "../../types/messages.js"
 import { extensionServiceAtom, isServiceReadyAtom, setServiceErrorAtom } from "./service.js"
-import { resetMessageCutoffAtom, yoloModeAtom } from "./ui.js"
+import { resetMessageCutoffAtom } from "./ui.js"
 import { logs } from "../../services/logs.js"
 
 /**
@@ -68,22 +68,16 @@ export const sendTaskAtom = atom(null, async (get, set, params: { text: string; 
  */
 export const sendAskResponseAtom = atom(
 	null,
-	async (
-		get,
-		set,
-		params: {
-			response?: ClineAskResponse
-			action?: string
-			text?: string
-			images?: string[]
-		},
-	) => {
+	async (get, set, params: { response?: string; action?: string; text?: string; images?: string[] }) => {
 		const message: WebviewMessage = {
 			type: "askResponse",
 		}
 
 		if (params.response) {
-			message.askResponse = params.response || "messageResponse"
+			message.askResponse = params.response
+		}
+		if (params.action) {
+			message.action = params.action
 		}
 		if (params.text) {
 			message.text = params.text
@@ -175,14 +169,9 @@ export const switchModeAtom = atom(null, async (get, set, mode: string) => {
  */
 export const respondToToolAtom = atom(
 	null,
-	async (
-		get,
-		set,
-		params: { response: "yesButtonClicked" | "noButtonClicked"; text?: string; images?: string[] },
-	) => {
+	async (get, set, params: { response: "yesButtonTapped" | "noButtonTapped"; text?: string; images?: string[] }) => {
 		const message: WebviewMessage = {
-			type: "askResponse",
-			askResponse: params.response,
+			type: params.response,
 			...(params.text && { text: params.text }),
 			...(params.images && { images: params.images }),
 		}
@@ -194,10 +183,9 @@ export const respondToToolAtom = atom(
 /**
  * Action atom to send API configuration
  */
-export const sendApiConfigurationAtom = atom(null, async (_get, set, apiConfiguration: ProviderSettings) => {
+export const sendApiConfigurationAtom = atom(null, async (get, set, apiConfiguration: any) => {
 	const message: WebviewMessage = {
-		type: "upsertApiConfiguration",
-		text: "default",
+		type: "apiConfiguration",
 		apiConfiguration,
 	}
 
@@ -221,17 +209,15 @@ export const sendCustomInstructionsAtom = atom(null, async (get, set, instructio
  */
 export const sendAlwaysAllowAtom = atom(null, async (get, set, alwaysAllow: boolean) => {
 	const message: WebviewMessage = {
-		type: "updateSettings",
-		updatedSettings: {
-			alwaysAllowMcp: alwaysAllow,
-		},
+		type: "alwaysAllow",
+		bool: alwaysAllow,
 	}
 
 	await set(sendWebviewMessageAtom, message)
 })
 
 /**
- * Action atom to open a file in the editorMcp
+ * Action atom to open a file in the editor
  */
 export const openFileAtom = atom(null, async (get, set, filePath: string) => {
 	const message: WebviewMessage = {
@@ -247,7 +233,7 @@ export const openFileAtom = atom(null, async (get, set, filePath: string) => {
  */
 export const openSettingsAtom = atom(null, async (get, set) => {
 	const message: WebviewMessage = {
-		type: "openExtensionSettings",
+		type: "openSettings",
 	}
 
 	await set(sendWebviewMessageAtom, message)
@@ -281,8 +267,7 @@ export const refreshStateAtom = atom(null, async (get) => {
  */
 export const sendPrimaryButtonClickAtom = atom(null, async (get, set) => {
 	const message: WebviewMessage = {
-		type: "askResponse",
-		askResponse: "yesButtonClicked",
+		type: "primaryButtonClick",
 	}
 
 	await set(sendWebviewMessageAtom, message)
@@ -293,27 +278,8 @@ export const sendPrimaryButtonClickAtom = atom(null, async (get, set) => {
  */
 export const sendSecondaryButtonClickAtom = atom(null, async (get, set) => {
 	const message: WebviewMessage = {
-		type: "askResponse",
-		askResponse: "noButtonClicked",
+		type: "secondaryButtonClick",
 	}
 
-	await set(sendWebviewMessageAtom, message)
-})
-
-/**
- * Action atom to toggle YOLO mode
- * Sends the yoloMode message to the extension to enable/disable auto-approval of all operations
- */
-export const toggleYoloModeAtom = atom(null, async (get, set) => {
-	const currentValue = get(yoloModeAtom)
-	const newValue = !currentValue
-
-	set(yoloModeAtom, newValue)
-	logs.info(`YOLO mode ${newValue ? "enabled" : "disabled"}`, "actions")
-
-	const message: WebviewMessage = {
-		type: "yoloMode",
-		bool: newValue,
-	}
 	await set(sendWebviewMessageAtom, message)
 })

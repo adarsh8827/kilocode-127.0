@@ -77,7 +77,7 @@ export class TelemetryService {
 
 			// Update Kilocode user ID if token is available
 			const provider = config.providers.find((p) => p.id === config.provider)
-			if (provider && provider.kilocodeToken && typeof provider.kilocodeToken === "string") {
+			if (provider && provider.kilocodeToken) {
 				await identityManager.updateKilocodeUserId(provider.kilocodeToken)
 			}
 
@@ -263,7 +263,7 @@ export class TelemetryService {
 		})
 	}
 
-	public trackTaskCompleted(taskId: string, duration: number, stats: Record<string, unknown>): void {
+	public trackTaskCompleted(taskId: string, duration: number, stats: any): void {
 		if (!this.client) return
 
 		this.client.capture(TelemetryEvent.TASK_COMPLETED, {
@@ -367,12 +367,7 @@ export class TelemetryService {
 	// Tool Tracking
 	// ============================================================================
 
-	public trackToolExecuted(
-		toolName: string,
-		executionTime: number,
-		success: boolean,
-		metadata?: Record<string, unknown>,
-	): void {
+	public trackToolExecuted(toolName: string, executionTime: number, success: boolean, metadata?: any): void {
 		if (!this.client) return
 
 		this.client.trackToolExecution(toolName, executionTime, success)
@@ -491,12 +486,7 @@ export class TelemetryService {
 	// Performance Tracking
 	// ============================================================================
 
-	public trackApiRequest(
-		provider: string,
-		model: string,
-		responseTime: number,
-		tokens?: Record<string, unknown>,
-	): void {
+	public trackApiRequest(provider: string, model: string, responseTime: number, tokens?: any): void {
 		if (!this.client) return
 
 		this.client.trackApiRequest(provider, model, responseTime, tokens)
@@ -561,7 +551,7 @@ export class TelemetryService {
 		})
 	}
 
-	public trackCIModeCompleted(stats: Record<string, unknown>): void {
+	public trackCIModeCompleted(stats: any): void {
 		if (!this.client) return
 
 		this.client.capture(TelemetryEvent.CI_MODE_COMPLETED, {

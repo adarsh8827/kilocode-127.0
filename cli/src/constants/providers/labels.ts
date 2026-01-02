@@ -23,7 +23,6 @@ export const PROVIDER_LABELS: Record<ProviderName, string> = {
 	"vscode-lm": "VS Code LM API",
 	openai: "OpenAI Compatible",
 	glama: "Glama",
-	"nano-gpt": "Nano-GPT",
 	huggingface: "Hugging Face",
 	litellm: "LiteLLM",
 	moonshot: "Moonshot",
@@ -37,7 +36,6 @@ export const PROVIDER_LABELS: Record<ProviderName, string> = {
 	"qwen-code": "Qwen Code",
 	"gemini-cli": "Gemini CLI",
 	zai: "Zai",
-	minimax: "MiniMax",
 	unbound: "Unbound",
 	requesty: "Requesty",
 	roo: "Roo",
@@ -45,11 +43,6 @@ export const PROVIDER_LABELS: Record<ProviderName, string> = {
 	"virtual-quota-fallback": "Virtual Quota Fallback",
 	"human-relay": "Human Relay",
 	"fake-ai": "Fake AI",
-	ovhcloud: "OVHcloud AI Endpoints",
-	inception: "Inception",
-	synthetic: "Synthetic",
-	"sap-ai-core": "SAP AI Core",
-	baseten: "BaseTen",
 }
 
 /**

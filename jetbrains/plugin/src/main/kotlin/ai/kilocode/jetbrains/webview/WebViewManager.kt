@@ -378,9 +378,7 @@ class WebViewManager(var project: Project) : Disposable, ThemeChangeListener {
                         """,
         )
 
-        logger.info("=== Received HTML update event ===")
-        logger.info("Handle: ${data.handle}")
-        logger.info("HTML length: ${data.htmlContent.length}")
+        logger.info("Received HTML update event: handle=${data.handle}, html length: ${data.htmlContent.length}")
 
         val webView = getLatestWebView()
 
@@ -388,23 +386,20 @@ class WebViewManager(var project: Project) : Disposable, ThemeChangeListener {
             try {
                 // If HTTP server is running
                 if (resourceRootDir != null) {
-                    logger.info("Resource root directory is set: ${resourceRootDir?.pathString}")
-
                     // Generate unique file name for WebView
-                    val filename = "index-${project.hashCode()}.html"
+                    val filename = "index.html"
 
                     // Save HTML content to file
-                    val savedPath = saveHtmlToResourceDir(data.htmlContent, filename)
-                    logger.info("HTML saved to: ${savedPath?.pathString}")
+                    saveHtmlToResourceDir(data.htmlContent, filename)
 
                     // Use HTTP URL to load WebView content
                     val url = "http://localhost:12345/$filename"
-                    logger.info("Loading WebView via HTTP URL: $url")
+                    logger.info("Load WebView HTML content via HTTP: $url")
 
                     webView.loadUrl(url)
                 } else {
                     // Fallback to direct HTML loading
-                    logger.warn("Resource root directory is NULL - loading HTML content directly")
+                    logger.warn("HTTP server not running or resource directory not set, loading HTML content directly")
                     webView.loadHtml(data.htmlContent)
                 }
 
@@ -474,21 +469,21 @@ class WebViewManager(var project: Project) : Disposable, ThemeChangeListener {
         try {
             // Only delete index.html file, keep other files
             resourceRootDir?.let {
-                val indexFile = it.resolve("index-${project.hashCode()}.html").toFile()
+                val indexFile = it.resolve("index.html").toFile()
                 if (indexFile.exists() && indexFile.isFile) {
                     val deleted = indexFile.delete()
                     if (deleted) {
-                        logger.info("index-${project.hashCode()}.html file deleted")
+                        logger.info("index.html file deleted")
                     } else {
-                        logger.warn("Failed to delete index-${project.hashCode()}.html file")
+                        logger.warn("Failed to delete index.html file")
                     }
                 } else {
-                    logger.info("index-${project.hashCode()}.html file does not exist, no need to clean up")
+                    logger.info("index.html file does not exist, no need to clean up")
                 }
             }
             resourceRootDir = null
         } catch (e: Exception) {
-            logger.error("Failed to clean up index-${project.hashCode()}.html file", e)
+            logger.error("Failed to clean up index.html file", e)
         }
 
         // Dispose WebView
@@ -557,12 +552,8 @@ class WebViewInstance(
     fun sendThemeConfigToWebView(themeConfig: JsonObject, bodyThemeClass: String) {
         currentThemeConfig = themeConfig
         this.bodyThemeClass = bodyThemeClass
-        if (isDisposed) {
-            logger.warn("WebView has been disposed, cannot send theme config")
-            return
-        }
-        if (!isPageLoaded) {
-            logger.debug("WebView page not yet loaded, theme will be injected after page load")
+        if (isDisposed or !isPageLoaded) {
+            logger.warn("WebView has been disposed or not loaded, cannot send theme config:$isDisposed,$isPageLoaded")
             return
         }
         injectTheme()

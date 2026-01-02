@@ -7,13 +7,12 @@ import { ContactForm } from "@/components/enterprise/contact-form"
 import { EXTERNAL_LINKS } from "@/lib/constants"
 import type { Metadata } from "next"
 import { SEO } from "@/lib/seo"
-import { ogImageUrl } from "@/lib/og"
 
-const TITLE = "Roo Code Cloud Enterprise"
+const TITLE = "Enterprise Solution"
 const DESCRIPTION =
 	"The control-plane for AI-powered software development. Gain visibility, governance, and control over your AI coding initiatives."
-const OG_DESCRIPTION = "The control-plane for AI-powered software development"
 const PATH = "/enterprise"
+const OG_IMAGE = SEO.ogImage
 
 export const metadata: Metadata = {
 	title: TITLE,
@@ -28,10 +27,10 @@ export const metadata: Metadata = {
 		siteName: SEO.name,
 		images: [
 			{
-				url: ogImageUrl(TITLE, OG_DESCRIPTION),
-				width: 1200,
-				height: 630,
-				alt: TITLE,
+				url: OG_IMAGE.url,
+				width: OG_IMAGE.width,
+				height: OG_IMAGE.height,
+				alt: OG_IMAGE.alt,
 			},
 		],
 		locale: SEO.locale,
@@ -41,7 +40,7 @@ export const metadata: Metadata = {
 		card: SEO.twitterCard,
 		title: TITLE,
 		description: DESCRIPTION,
-		images: [ogImageUrl(TITLE, OG_DESCRIPTION)],
+		images: [OG_IMAGE.url],
 	},
 	keywords: [
 		...SEO.keywords,

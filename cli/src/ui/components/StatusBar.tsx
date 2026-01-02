@@ -12,7 +12,6 @@ import {
 	apiConfigurationAtom,
 	chatMessagesAtom,
 	routerModelsAtom,
-	yoloModeAtom,
 } from "../../state/atoms/index.js"
 import { useGitInfo } from "../../state/hooks/useGitInfo.js"
 import { useContextUsage } from "../../state/hooks/useContextUsage.js"
@@ -25,7 +24,6 @@ import {
 	type RouterModels,
 } from "../../constants/providers/models.js"
 import type { ProviderSettings } from "../../types/messages.js"
-import type { ProviderConfig } from "../../config/types.js"
 import path from "path"
 import { isGitWorktree } from "../../utils/git.js"
 
@@ -41,10 +39,9 @@ function getModelDisplayName(apiConfig: ProviderSettings | null, routerModels: R
 		// Get current model ID
 		const currentModelId = getCurrentModelId({
 			providerConfig: {
-				id: "default",
-				provider: apiConfig.apiProvider || "",
+				provider: apiConfig.apiProvider,
 				...apiConfig,
-			} as ProviderConfig,
+			} as any,
 			routerModels,
 			kilocodeDefaultModel: apiConfig.kilocodeModel || "",
 		})
@@ -103,7 +100,6 @@ export const StatusBar: React.FC = () => {
 	const apiConfig = useAtomValue(apiConfigurationAtom)
 	const messages = useAtomValue(chatMessagesAtom)
 	const routerModels = useAtomValue(routerModelsAtom)
-	const yoloMode = useAtomValue(yoloModeAtom)
 
 	// Get git info
 	const gitInfo = useGitInfo(cwd)
@@ -183,20 +179,8 @@ export const StatusBar: React.FC = () => {
 				) : null}
 			</Box>
 
-			{/* Right side: YOLO indicator, Mode, Model, and Context */}
+			{/* Right side: Mode, Model, and Context */}
 			<Box>
-				{/* YOLO Mode Indicator */}
-				{yoloMode && (
-					<>
-						<Text color="red" bold>
-							⚡ YOLO
-						</Text>
-						<Text color={theme.ui.text.dimmed} dimColor>
-							{" | "}
-						</Text>
-					</>
-				)}
-
 				{/* Mode */}
 				<Text color={theme.ui.text.highlight} bold>
 					{mode ? mode.charAt(0).toUpperCase() + mode.slice(1) : "N/A"}

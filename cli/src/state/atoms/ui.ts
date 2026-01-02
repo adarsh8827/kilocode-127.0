@@ -55,12 +55,6 @@ export const messageCutoffTimestampAtom = atom<number>(0)
 export const errorAtom = atom<string | null>(null)
 
 /**
- * Atom to track YOLO mode state
- * When enabled, all operations are auto-approved without confirmation
- */
-export const yoloModeAtom = atom<boolean>(false)
-
-/**
  * Atom to track when parallel mode is committing changes
  * Used to disable input and show "Committing your changes..." message
  */
@@ -147,7 +141,6 @@ export type InputMode =
 	| "autocomplete" // Command autocomplete active
 	| "followup" // Followup suggestions active
 	| "history" // History navigation mode
-	| "shell" // Shell mode for command execution
 
 /**
  * Current input mode
@@ -293,30 +286,18 @@ export const lastAskMessageAtom = atom<ExtensionChatMessage | null>((get) => {
 	const messages = get(chatMessagesAtom)
 
 	// Ask types that require user approval
-	const approvalAskTypes = [
-		"tool",
-		"command",
-		"command_output",
-		"browser_action_launch",
-		"use_mcp_server",
-		"payment_required_prompt",
-		"checkpoint_restore",
-	]
+	const approvalAskTypes = ["tool", "command", "browser_action_launch", "use_mcp_server", "payment_required_prompt"]
 
 	const lastMessage = messages[messages.length - 1]
-
 	if (
 		lastMessage &&
 		lastMessage.type === "ask" &&
 		!lastMessage.isAnswered &&
 		lastMessage.ask &&
-		approvalAskTypes.includes(lastMessage.ask)
+		approvalAskTypes.includes(lastMessage.ask) &&
+		!lastMessage.partial
 	) {
-		// command_output asks can be partial (while command is running)
-		// All other asks must be complete (not partial) to show approval
-		if (lastMessage.ask === "command_output" || !lastMessage.partial) {
-			return lastMessage
-		}
+		return lastMessage
 	}
 	return null
 })
@@ -408,11 +389,7 @@ export const clearTextBufferAtom = atom(null, (get, set) => {
  */
 export const setSuggestionsAtom = atom(null, (get, set, suggestions: CommandSuggestion[]) => {
 	set(suggestionsAtom, suggestions)
-	if (suggestions.length === 0) {
-		set(selectedIndexAtom, -1)
-	} else {
-		set(selectedIndexAtom, 0)
-	}
+	set(selectedIndexAtom, 0)
 })
 
 /**
@@ -420,11 +397,7 @@ export const setSuggestionsAtom = atom(null, (get, set, suggestions: CommandSugg
  */
 export const setArgumentSuggestionsAtom = atom(null, (get, set, suggestions: ArgumentSuggestion[]) => {
 	set(argumentSuggestionsAtom, suggestions)
-	if (suggestions.length === 0) {
-		set(selectedIndexAtom, -1)
-	} else {
-		set(selectedIndexAtom, 0)
-	}
+	set(selectedIndexAtom, 0)
 })
 
 /**
@@ -432,11 +405,7 @@ export const setArgumentSuggestionsAtom = atom(null, (get, set, suggestions: Arg
  */
 export const setFileMentionSuggestionsAtom = atom(null, (get, set, suggestions: FileMentionSuggestion[]) => {
 	set(fileMentionSuggestionsAtom, suggestions)
-	if (suggestions.length === 0) {
-		set(selectedIndexAtom, -1)
-	} else {
-		set(selectedIndexAtom, 0)
-	}
+	set(selectedIndexAtom, 0)
 })
 
 /**
@@ -509,7 +478,7 @@ export const hideAutocompleteAtom = atom(null, (get, set) => {
  * This atom is kept for backward compatibility but has no effect
  * @deprecated This atom is kept for backward compatibility but may be removed
  */
-export const showAutocompleteMenuAtom = atom(null, (_get, _set) => {
+export const showAutocompleteMenuAtom = atom(null, (get, set) => {
 	// No-op: autocomplete visibility is now derived from text buffer
 	// Kept for backward compatibility
 })

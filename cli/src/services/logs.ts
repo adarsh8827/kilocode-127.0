@@ -2,7 +2,6 @@ import { appendFileSync } from "fs"
 import * as fs from "fs-extra"
 import * as path from "path"
 import { KiloCodePaths } from "../utils/paths.js"
-import { safeStringify } from "../utils/safe-stringify.js"
 
 export type LogLevel = "info" | "debug" | "error" | "warn"
 
@@ -12,7 +11,7 @@ export interface LogEntry {
 	level: LogLevel
 	message: string
 	source?: string
-	context?: Record<string, unknown>
+	context?: Record<string, any>
 }
 
 export interface LogFilter {
@@ -69,20 +68,55 @@ export class LogsService {
 	}
 
 	/**
-	 * Serialize context object, handling Error objects and circular references
+	 * Serialize an error object to a plain object with all relevant properties
 	 */
-	private serializeContext(context?: Record<string, unknown>): Record<string, unknown> | undefined {
+	private serializeError(error: any): any {
+		if (error instanceof Error) {
+			return {
+				message: error.message,
+				name: error.name,
+				stack: error.stack,
+				// Include any additional enumerable properties
+				...Object.getOwnPropertyNames(error)
+					.filter((key) => key !== "message" && key !== "name" && key !== "stack")
+					.reduce(
+						(acc, key) => {
+							acc[key] = (error as any)[key]
+							return acc
+						},
+						{} as Record<string, any>,
+					),
+			}
+		}
+		return error
+	}
+
+	/**
+	 * Serialize context object, handling Error objects specially
+	 */
+	private serializeContext(context?: Record<string, any>): Record<string, any> | undefined {
 		if (!context) {
 			return undefined
 		}
 
-		return safeStringify(context) as Record<string, unknown>
+		const serialized: Record<string, any> = {}
+		for (const [key, value] of Object.entries(context)) {
+			if (value instanceof Error) {
+				serialized[key] = this.serializeError(value)
+			} else if (typeof value === "object" && value !== null) {
+				// Recursively handle nested objects that might contain errors
+				serialized[key] = this.serializeContext(value as Record<string, any>) || value
+			} else {
+				serialized[key] = value
+			}
+		}
+		return serialized
 	}
 
 	/**
 	 * Add a log entry with the specified level
 	 */
-	private addLog(level: LogLevel, message: string, source?: string, context?: Record<string, unknown>): void {
+	private addLog(level: LogLevel, message: string, source?: string, context?: Record<string, any>): void {
 		// Serialize context to handle Error objects properly
 		const serializedContext = this.serializeContext(context)
 
@@ -121,7 +155,7 @@ export class LogsService {
 	 */
 	private outputToConsole(entry: LogEntry): void {
 		// GUARD: Prevent recursive logging by checking if we're already in a logging call
-		if ((this as { _isLogging?: boolean })._isLogging) {
+		if ((this as any)._isLogging) {
 			return
 		}
 
@@ -132,7 +166,7 @@ export class LogsService {
 		}
 
 		// Set flag to prevent recursion
-		;(this as { _isLogging?: boolean })._isLogging = true
+		;(this as any)._isLogging = true
 
 		try {
 			const ts = new Date(entry.ts).toISOString()
@@ -163,7 +197,7 @@ export class LogsService {
 			}
 		} finally {
 			// Always clear the flag
-			;(this as { _isLogging?: boolean })._isLogging = false
+			;(this as any)._isLogging = false
 		}
 	}
 
@@ -191,18 +225,7 @@ export class LogsService {
 		const ts = new Date(entry.ts).toISOString()
 		const source = entry.source ? `[${entry.source}]` : ""
 		const prefix = `${ts} ${source}`
-
-		// Use safe stringify to handle circular references
-		let contextStr = ""
-		if (entry.context) {
-			try {
-				const safeContext = safeStringify(entry.context)
-				contextStr = ` ${JSON.stringify(safeContext)}`
-			} catch (_error) {
-				// Fallback if even safe stringify fails
-				contextStr = " [Context serialization failed]"
-			}
-		}
+		const contextStr = entry.context ? ` ${JSON.stringify(entry.context)}` : ""
 
 		switch (entry.level) {
 			case "error":
@@ -245,28 +268,28 @@ export class LogsService {
 	/**
 	 * Log an info message
 	 */
-	public info(message: string, source?: string, context?: Record<string, unknown>): void {
+	public info(message: string, source?: string, context?: Record<string, any>): void {
 		this.addLog("info", message, source, context)
 	}
 
 	/**
 	 * Log a debug message
 	 */
-	public debug(message: string, source?: string, context?: Record<string, unknown>): void {
+	public debug(message: string, source?: string, context?: Record<string, any>): void {
 		this.addLog("debug", message, source, context)
 	}
 
 	/**
 	 * Log an error message
 	 */
-	public error(message: string, source?: string, context?: Record<string, unknown>): void {
+	public error(message: string, source?: string, context?: Record<string, any>): void {
 		this.addLog("error", message, source, context)
 	}
 
 	/**
 	 * Log a warning message
 	 */
-	public warn(message: string, source?: string, context?: Record<string, unknown>): void {
+	public warn(message: string, source?: string, context?: Record<string, any>): void {
 		this.addLog("warn", message, source, context)
 	}
 

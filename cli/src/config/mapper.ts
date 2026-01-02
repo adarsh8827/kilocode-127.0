@@ -29,12 +29,6 @@ export function mapConfigToExtensionState(
 			modelId: getModelIdForProvider(p),
 		}))
 
-		// Map auto-approval settings from CLI config to extension state
-		// These settings control whether the extension auto-approves operations
-		// or asks the CLI for approval (which then prompts the user)
-		const autoApproval = config.autoApproval
-		const autoApprovalEnabled = autoApproval?.enabled ?? false
-
 		return {
 			...currentState,
 			apiConfiguration,
@@ -42,33 +36,6 @@ export function mapConfigToExtensionState(
 			listApiConfigMeta,
 			telemetrySetting: config.telemetry ? "enabled" : "disabled",
 			mode: config.mode,
-			// Auto-approval settings - these control whether the extension auto-approves
-			// or defers to the CLI's approval flow
-			autoApprovalEnabled,
-			alwaysAllowReadOnly: autoApprovalEnabled && (autoApproval?.read?.enabled ?? false),
-			alwaysAllowReadOnlyOutsideWorkspace:
-				autoApprovalEnabled && (autoApproval?.read?.enabled ?? false) && (autoApproval?.read?.outside ?? false),
-			alwaysAllowWrite: autoApprovalEnabled && (autoApproval?.write?.enabled ?? false),
-			alwaysAllowWriteOutsideWorkspace:
-				autoApprovalEnabled &&
-				(autoApproval?.write?.enabled ?? false) &&
-				(autoApproval?.write?.outside ?? false),
-			alwaysAllowWriteProtected:
-				autoApprovalEnabled &&
-				(autoApproval?.write?.enabled ?? false) &&
-				(autoApproval?.write?.protected ?? false),
-			alwaysAllowBrowser: autoApprovalEnabled && (autoApproval?.browser?.enabled ?? false),
-			alwaysApproveResubmit: autoApprovalEnabled && (autoApproval?.retry?.enabled ?? false),
-			requestDelaySeconds: autoApproval?.retry?.delay ?? 10,
-			alwaysAllowMcp: autoApprovalEnabled && (autoApproval?.mcp?.enabled ?? false),
-			alwaysAllowModeSwitch: autoApprovalEnabled && (autoApproval?.mode?.enabled ?? false),
-			alwaysAllowSubtasks: autoApprovalEnabled && (autoApproval?.subtasks?.enabled ?? false),
-			alwaysAllowExecute: autoApprovalEnabled && (autoApproval?.execute?.enabled ?? false),
-			allowedCommands: autoApproval?.execute?.allowed ?? [],
-			deniedCommands: autoApproval?.execute?.denied ?? [],
-			alwaysAllowFollowupQuestions: autoApprovalEnabled && (autoApproval?.question?.enabled ?? false),
-			followupAutoApproveTimeoutMs: (autoApproval?.question?.timeout ?? 60) * 1000,
-			alwaysAllowUpdateTodoList: autoApprovalEnabled && (autoApproval?.todo?.enabled ?? false),
 		}
 	} catch (error) {
 		logs.error("Failed to map config to extension state", "ConfigMapper", { error })
@@ -84,15 +51,14 @@ function mapProviderToApiConfig(provider: ProviderConfig): ProviderSettings {
 	// Copy all provider-specific fields
 	Object.keys(provider).forEach((key) => {
 		if (key !== "id" && key !== "provider") {
-			// Type assertion needed because we're dynamically accessing keys
-			;(config as Record<string, unknown>)[key] = (provider as Record<string, unknown>)[key]
+			config[key] = provider[key]
 		}
 	})
 
 	return config
 }
 
-export function getModelIdForProvider(provider: ProviderConfig): string {
+function getModelIdForProvider(provider: ProviderConfig): string {
 	switch (provider.provider) {
 		case "kilocode":
 			return provider.kilocodeModel || ""
@@ -107,7 +73,7 @@ export function getModelIdForProvider(provider: ProviderConfig): string {
 		case "lmstudio":
 			return provider.lmStudioModelId || ""
 		case "openai":
-			return provider.openAiModelId || ""
+			return provider.apiModelId || ""
 		case "glama":
 			return provider.glamaModelId || ""
 		case "litellm":
@@ -122,44 +88,8 @@ export function getModelIdForProvider(provider: ProviderConfig): string {
 			return provider.vercelAiGatewayModelId || ""
 		case "io-intelligence":
 			return provider.ioIntelligenceModelId || ""
-		case "ovhcloud":
-			return provider.ovhCloudAiEndpointsModelId || ""
-		case "inception":
-			return provider.inceptionLabsModelId || ""
-		case "bedrock":
-		case "vertex":
-		case "gemini":
-		case "gemini-cli":
-		case "mistral":
-		case "moonshot":
-		case "minimax":
-		case "deepseek":
-		case "doubao":
-		case "qwen-code":
-		case "xai":
-		case "groq":
-		case "chutes":
-		case "cerebras":
-		case "sambanova":
-		case "zai":
-		case "fireworks":
-		case "featherless":
-		case "roo":
-		case "claude-code":
-		case "synthetic":
-			return provider.apiModelId || ""
-		case "virtual-quota-fallback":
-			return provider.profiles && provider.profiles.length > 0 ? `${provider.profiles.length} profile(s)` : ""
-		case "vscode-lm":
-			if (provider.vsCodeLmModelSelector) {
-				return `${provider.vsCodeLmModelSelector.vendor}/${provider.vsCodeLmModelSelector.family}`
-			}
-			return ""
-		case "huggingface":
-			return provider.huggingFaceModelId || ""
-		case "human-relay":
-		case "fake-ai":
-			return ""
+		default:
+			return provider.apiModelId || provider.modelId || ""
 	}
 }
 
@@ -179,11 +109,11 @@ export function mapExtensionStateToConfig(state: ExtensionState, currentConfig?:
 		const existingProvider = config.providers.find((p) => p.id === providerId)
 
 		if (!existingProvider) {
-			const newProvider = {
+			const newProvider: ProviderConfig = {
 				id: providerId,
 				provider: state.apiConfiguration.apiProvider || "kilocode",
 				...state.apiConfiguration,
-			} as ProviderConfig
+			}
 			config.providers.push(newProvider)
 		} else {
 			// Update existing provider

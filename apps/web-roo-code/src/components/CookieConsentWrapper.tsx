@@ -5,7 +5,7 @@ import ReactCookieConsent from "react-cookie-consent"
 import { Cookie } from "lucide-react"
 import { getDomain } from "tldts"
 import { CONSENT_COOKIE_NAME } from "@roo-code/types"
-import { handleConsentAccept, handleConsentReject } from "@/lib/analytics/consent-manager"
+import { dispatchConsentEvent } from "@/lib/analytics/consent-manager"
 
 /**
  * GDPR-compliant cookie consent banner component
@@ -23,11 +23,11 @@ export function CookieConsentWrapper() {
 	}, [])
 
 	const handleAccept = () => {
-		handleConsentAccept()
+		dispatchConsentEvent(true)
 	}
 
 	const handleDecline = () => {
-		handleConsentReject()
+		dispatchConsentEvent(false)
 	}
 
 	const extraCookieOptions = cookieDomain

@@ -2,12 +2,10 @@
  * Command system type definitions
  */
 
-import type { ExtensionMessage, RouterModels, WebviewMessage, ModeConfig } from "../../types/messages.js"
-import type { CliMessage } from "../../types/cli.js"
+import type { RouterModels } from "../../types/messages.js"
 import type { CLIConfig, ProviderConfig } from "../../config/types.js"
 import type { ProfileData, BalanceData } from "../../state/atoms/profile.js"
 import type { TaskHistoryData, TaskHistoryFilters } from "../../state/atoms/taskHistory.js"
-import type { ModelListFilters } from "../../state/atoms/modelList.js"
 
 export interface Command {
 	name: string
@@ -28,18 +26,18 @@ export interface CommandOption {
 	description: string
 	required?: boolean
 	type: "string" | "number" | "boolean"
-	default?: string | number | boolean
+	default?: any
 }
 
 export interface CommandContext {
 	input: string
 	args: string[]
-	options: Record<string, string | number | boolean>
+	options: Record<string, any>
 	config: CLIConfig
-	sendMessage: (message: CliMessage) => Promise<void>
-	addMessage: (message: CliMessage) => void
+	sendMessage: (message: any) => Promise<void>
+	addMessage: (message: any) => void
 	clearMessages: () => void
-	replaceMessages: (messages: CliMessage[]) => void
+	replaceMessages: (messages: any[]) => void
 	setMessageCutoffTimestamp: (timestamp: number) => void
 	clearTask: () => Promise<void>
 	setMode: (mode: string) => void
@@ -55,15 +53,11 @@ export interface CommandContext {
 	refreshRouterModels: () => Promise<void>
 	// Provider update function for teams command
 	updateProvider: (providerId: string, updates: Partial<ProviderConfig>) => Promise<void>
-	// Provider selection function
-	selectProvider: (providerId: string) => Promise<void>
 	// Profile data context
 	profileData: ProfileData | null
 	balanceData: BalanceData | null
 	profileLoading: boolean
 	balanceLoading: boolean
-	// Custom modes context
-	customModes: ModeConfig[]
 	// Task history context
 	taskHistoryData: TaskHistoryData | null
 	taskHistoryFilters: TaskHistoryFilters
@@ -74,15 +68,8 @@ export interface CommandContext {
 	changeTaskHistoryPage: (pageIndex: number) => Promise<TaskHistoryData>
 	nextTaskHistoryPage: () => Promise<TaskHistoryData>
 	previousTaskHistoryPage: () => Promise<TaskHistoryData>
-	sendWebviewMessage: (message: WebviewMessage) => Promise<void>
+	sendWebviewMessage: (message: any) => Promise<void>
 	refreshTerminal: () => Promise<void>
-	chatMessages: ExtensionMessage[]
-	// Model list context
-	modelListPageIndex: number
-	modelListFilters: ModelListFilters
-	updateModelListFilters: (filters: Partial<ModelListFilters>) => void
-	changeModelListPage: (pageIndex: number) => void
-	resetModelListState: () => void
 }
 
 export type CommandHandler = (context: CommandContext) => Promise<void> | void
@@ -90,7 +77,7 @@ export type CommandHandler = (context: CommandContext) => Promise<void> | void
 export interface ParsedCommand {
 	command: string
 	args: string[]
-	options: Record<string, string | number | boolean>
+	options: Record<string, any>
 }
 
 // Argument autocompletion types
@@ -108,19 +95,6 @@ export interface ArgumentSuggestion {
 	error?: string
 }
 
-export interface ArgumentProviderCommandContext {
-	config: CLIConfig
-	routerModels: RouterModels | null
-	currentProvider: ProviderConfig | null
-	kilocodeDefaultModel: string
-	profileData: ProfileData | null
-	profileLoading: boolean
-	updateProviderModel: (modelId: string) => Promise<void>
-	refreshRouterModels: () => Promise<void>
-	taskHistoryData: TaskHistoryData | null
-	chatMessages: ExtensionMessage[]
-}
-
 /**
  * Context provided to argument providers
  */
@@ -132,7 +106,7 @@ export interface ArgumentProviderContext {
 
 	// Current state
 	currentArgs: string[]
-	currentOptions: Record<string, string | number | boolean>
+	currentOptions: Record<string, any>
 	partialInput: string
 
 	// Access to previous arguments by name
@@ -141,14 +115,24 @@ export interface ArgumentProviderContext {
 	// Access to all parsed values
 	parsedValues: {
 		args: Record<string, string>
-		options: Record<string, string | number | boolean>
+		options: Record<string, any>
 	}
 
 	// Metadata about the command
 	command: Command
 
 	// CommandContext properties for providers that need them
-	commandContext?: ArgumentProviderCommandContext
+	commandContext?: {
+		config: CLIConfig
+		routerModels: RouterModels | null
+		currentProvider: ProviderConfig | null
+		kilocodeDefaultModel: string
+		profileData: ProfileData | null
+		profileLoading: boolean
+		updateProviderModel: (modelId: string) => Promise<void>
+		refreshRouterModels: () => Promise<void>
+		taskHistoryData: TaskHistoryData | null
+	}
 }
 
 /**

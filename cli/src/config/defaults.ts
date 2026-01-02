@@ -8,7 +8,7 @@ export const DEFAULT_AUTO_APPROVAL: AutoApprovalConfig = {
 	enabled: true,
 	read: {
 		enabled: true,
-		outside: false,
+		outside: true,
 	},
 	write: {
 		enabled: true,
@@ -55,7 +55,7 @@ export const DEFAULT_CONFIG = {
 			id: "default",
 			provider: "kilocode",
 			kilocodeToken: "",
-			kilocodeModel: "x-ai/grok-code-fast-1",
+			kilocodeModel: "anthropic/claude-sonnet-4.5",
 		},
 	],
 	autoApproval: DEFAULT_AUTO_APPROVAL,

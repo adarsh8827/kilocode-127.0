@@ -5,7 +5,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import { profileCommand } from "../profile.js"
 import type { CommandContext } from "../core/types.js"
-import { createMockContext } from "./helpers/mockContext.js"
 
 describe("/profile command", () => {
 	let mockContext: CommandContext
@@ -14,16 +13,32 @@ describe("/profile command", () => {
 	beforeEach(() => {
 		addMessageMock = vi.fn()
 
-		mockContext = createMockContext({
+		mockContext = {
 			input: "/profile",
+			args: [],
+			options: {},
+			sendMessage: vi.fn().mockResolvedValue(undefined),
 			addMessage: addMessageMock,
+			clearMessages: vi.fn(),
+			replaceMessages: vi.fn(),
+			clearTask: vi.fn().mockResolvedValue(undefined),
+			setMode: vi.fn(),
+			exit: vi.fn(),
+			routerModels: null,
 			currentProvider: {
 				id: "test-provider",
 				provider: "kilocode",
 				kilocodeToken: "test-token",
 			},
 			kilocodeDefaultModel: "test-model",
-		})
+			updateProviderModel: vi.fn().mockResolvedValue(undefined),
+			refreshRouterModels: vi.fn().mockResolvedValue(undefined),
+			updateProvider: vi.fn().mockResolvedValue(undefined),
+			profileData: null,
+			balanceData: null,
+			profileLoading: false,
+			balanceLoading: false,
+		}
 	})
 
 	describe("Command metadata", () => {
@@ -126,16 +141,14 @@ describe("/profile command", () => {
 
 			await profileCommand.handler(mockContext)
 
-			const profileMessage = addMessageMock.mock.calls.find((call: unknown[]) => {
-				const msg = call[0] as { content?: string }
-				return msg.content?.includes("Profile Information")
-			})
+			const profileMessage = addMessageMock.mock.calls.find((call: any) =>
+				call[0].content?.includes("Profile Information"),
+			)
 			expect(profileMessage).toBeDefined()
 			if (profileMessage) {
-				const msg = profileMessage[0] as { content: string }
-				expect(msg.content).toContain("John Doe")
-				expect(msg.content).toContain("john@example.com")
-				expect(msg.content).toContain("$42.75")
+				expect(profileMessage[0].content).toContain("John Doe")
+				expect(profileMessage[0].content).toContain("john@example.com")
+				expect(profileMessage[0].content).toContain("$42.75")
 			}
 		})
 
@@ -160,14 +173,12 @@ describe("/profile command", () => {
 
 			await profileCommand.handler(mockContext)
 
-			const profileMessage = addMessageMock.mock.calls.find((call: unknown[]) => {
-				const msg = call[0] as { content?: string }
-				return msg.content?.includes("Profile Information")
-			})
+			const profileMessage = addMessageMock.mock.calls.find((call: any) =>
+				call[0].content?.includes("Profile Information"),
+			)
 			expect(profileMessage).toBeDefined()
 			if (profileMessage) {
-				const msg = profileMessage[0] as { content: string }
-				expect(msg.content).toContain("Teams: Personal")
+				expect(profileMessage[0].content).toContain("Teams: Personal")
 			}
 		})
 
@@ -199,14 +210,12 @@ describe("/profile command", () => {
 
 			await profileCommand.handler(mockContext)
 
-			const profileMessage = addMessageMock.mock.calls.find((call: unknown[]) => {
-				const msg = call[0] as { content?: string }
-				return msg.content?.includes("Profile Information")
-			})
+			const profileMessage = addMessageMock.mock.calls.find((call: any) =>
+				call[0].content?.includes("Profile Information"),
+			)
 			expect(profileMessage).toBeDefined()
 			if (profileMessage) {
-				const msg = profileMessage[0] as { content: string }
-				expect(msg.content).toContain("Teams: Acme Corp (admin)")
+				expect(profileMessage[0].content).toContain("Teams: Acme Corp (admin)")
 			}
 		})
 	})
@@ -229,10 +238,9 @@ describe("/profile command", () => {
 
 			await profileCommand.handler(mockContext)
 
-			const errorMessage = addMessageMock.mock.calls.find((call: unknown[]) => {
-				const msg = call[0] as { type: string; content?: string }
-				return msg.type === "error" && msg.content?.includes("No user data available")
-			})
+			const errorMessage = addMessageMock.mock.calls.find(
+				(call: any) => call[0].type === "error" && call[0].content?.includes("No user data available"),
+			)
 			expect(errorMessage).toBeDefined()
 		})
 	})

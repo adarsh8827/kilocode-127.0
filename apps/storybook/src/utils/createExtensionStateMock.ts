@@ -1,69 +1,49 @@
-import type { ExtensionStateContextType } from "../../../../webview-ui/src/context/ExtensionStateContext"
+import { ExtensionStateContextType } from "../../../../webview-ui/src/context/ExtensionStateContext"
 
 /**
- * Creates a smart Proxy-based mock for ExtensionState in Storybook
+ * Zero-maintenance mock for ExtensionState in Storybook
  *
- * Only defines properties actually used in Storybook stories.
- * If you access an undefined property, you get a helpful error message.
- *
- * This approach minimizes maintenance - we only add properties when needed,
- * not every time ExtensionStateContextType changes.
- *
- * @param overrides - Story-specific overrides for extension state properties
- * @returns Proxied ExtensionStateContextType that provides smart defaults and helpful errors
+ * Uses a Proxy to automatically return sensible defaults for any property.
+ * No need to maintain a list of properties - it just works.
  */
 export const createExtensionStateMock = (
 	overrides: Partial<ExtensionStateContextType> = {},
 ): ExtensionStateContextType => {
-	// Only define properties that Storybook stories actually use
-	const knownProperties: Partial<ExtensionStateContextType> = {
-		// Add properties here as they're needed in stories
-		// For example:
-		// theme: {},
-		// apiConfiguration: null,
-	}
-
-	// Merge with overrides
-	const base = { ...knownProperties, ...overrides }
-
-	return new Proxy(base as ExtensionStateContextType, {
-		get(target, prop: string | symbol) {
+	return new Proxy(overrides, {
+		get(target: any, prop: string | symbol) {
 			const propName = String(prop)
 
-			// Return value if it exists
+			// Return override if provided
 			if (propName in target) {
-				return (target as any)[propName]
+				return target[propName]
 			}
 
-			// Provide smart defaults for common patterns
-
-			// Functions: return no-ops
-			if (propName.startsWith("set") || propName.startsWith("toggle") || propName.startsWith("on")) {
+			// Functions return no-ops
+			if (propName.startsWith("set") || propName.startsWith("toggle")) {
 				return () => {}
 			}
 
-			// Booleans: default to false
+			// Booleans default to false
 			if (
 				propName.startsWith("is") ||
 				propName.startsWith("has") ||
 				propName.startsWith("show") ||
-				propName.endsWith("Enabled") ||
-				propName.endsWith("Disabled")
+				propName.endsWith("Enabled")
 			) {
 				return false
 			}
 
-			// Arrays: default to empty
+			// Arrays default to empty
 			if (propName.endsWith("s") || propName.includes("List") || propName.includes("Array")) {
 				return []
 			}
 
-			// Objects: default to empty
+			// Objects default to empty
 			if (propName.includes("Config") || propName.includes("Settings") || propName === "theme") {
 				return {}
 			}
 
-			// Strings: default to empty
+			// Strings default to empty
 			if (
 				propName.endsWith("Id") ||
 				propName.endsWith("Name") ||
@@ -73,20 +53,12 @@ export const createExtensionStateMock = (
 				return ""
 			}
 
-			// Numbers: default to 0
-			if (propName.endsWith("Count") || propName.endsWith("Limit") || propName.endsWith("Index")) {
+			// Numbers default to 0
+			if (propName.endsWith("Count") || propName.endsWith("Limit")) {
 				return 0
 			}
 
-			// Everything else: provide helpful error
-			console.warn(
-				`\n⚠️  Storybook Extension State Mock: Accessed undefined property "${propName}"\n\n` +
-					`If this property is needed for your story, add it to createExtensionStateMock:\n\n` +
-					`  1. Open: apps/storybook/src/utils/createExtensionStateMock.ts\n` +
-					`  2. Add to knownProperties: ${propName}: <value>\n` +
-					`  3. Or pass as override in your story\n`,
-			)
-
+			// Everything else is undefined (which is fine for optional properties)
 			return undefined
 		},
 	}) as ExtensionStateContextType

@@ -2,7 +2,7 @@
  * /teams command - Manage team/organization selection
  */
 
-import type { Command, ArgumentProviderContext, ArgumentSuggestion, CommandContext } from "./core/types.js"
+import type { Command, ArgumentProviderContext, ArgumentSuggestion } from "./core/types.js"
 import type { UserOrganization } from "../state/atoms/profile.js"
 
 /**
@@ -22,7 +22,7 @@ function normalizeTeamName(name: string): string {
 /**
  * List all available teams
  */
-async function listTeams(context: CommandContext): Promise<void> {
+async function listTeams(context: any): Promise<void> {
 	const { currentProvider, addMessage, profileData, profileLoading } = context
 
 	// Check if user is authenticated with Kilocode
@@ -57,14 +57,14 @@ async function listTeams(context: CommandContext): Promise<void> {
 		return
 	}
 
-	const organizations = profileData?.organizations || []
+	const organizations = profileData.organizations || []
 	const currentOrgId = currentProvider.kilocodeOrganizationId
 
 	if (organizations.length < 1) {
 		addMessage({
 			id: Date.now().toString(),
 			type: "system",
-			content: `You're currently not a part of any Kilo Code teams. Go to https://app.kilo.ai/get-started/teams to get started with Kilo Code for Teams!`,
+			content: `You're currently not a part of any Kilo Code teams. Go to https://app.kilocode.ai/get-started/teams to get started with Kilo Code for Teams!`,
 			ts: Date.now(),
 		})
 		return
@@ -81,9 +81,7 @@ async function listTeams(context: CommandContext): Promise<void> {
 		const isCurrent = org.id === currentOrgId
 		content += `${isCurrent ? "→ " : "  "}${normalizeTeamName(org.name)}${isCurrent ? " (current)" : ""}\n`
 	}
-	if (organizations.length > 0) {
-		content += `\nUse \`/teams select ${normalizeTeamName(organizations[0]!.name)}\` to select a team profile\n`
-	}
+	content += `\nUse \`/teams select ${normalizeTeamName(organizations[0].name)}\` select the ${organizations[0].name} profile\n`
 	content += `Use \`/teams select personal\` to switch to personal account\n`
 
 	addMessage({
@@ -97,8 +95,8 @@ async function listTeams(context: CommandContext): Promise<void> {
 /**
  * Select a team
  */
-async function selectTeam(context: CommandContext, teamId: string): Promise<void> {
-	const { currentProvider, addMessage, updateProvider, profileData, refreshRouterModels } = context
+async function selectTeam(context: any, teamId: string): Promise<void> {
+	const { currentProvider, addMessage, updateProvider, profileData } = context
 
 	// Check if user is authenticated with Kilocode
 	if (!currentProvider || currentProvider.provider !== "kilocode") {
@@ -124,17 +122,16 @@ async function selectTeam(context: CommandContext, teamId: string): Promise<void
 	try {
 		// Handle "personal" as special case
 		if (teamId.toLowerCase() === "personal") {
-			// Update provider configuration to remove organization ID
-			await updateProvider(currentProvider.id, {
-				kilocodeOrganizationId: undefined,
-			})
-			await refreshRouterModels()
-
 			addMessage({
 				id: Date.now().toString(),
 				type: "system",
-				content: "Switched to **Personal** account",
+				content: "✓ Switched to **Personal** account",
 				ts: Date.now(),
+			})
+
+			// Update provider configuration to remove organization ID
+			await updateProvider(currentProvider.id, {
+				kilocodeOrganizationId: undefined,
 			})
 
 			return
@@ -163,18 +160,16 @@ async function selectTeam(context: CommandContext, teamId: string): Promise<void
 				return
 			}
 
-			// Update provider configuration with new organization ID
-			await updateProvider(currentProvider.id, {
-				kilocodeOrganizationId: targetOrg.id,
-			})
-
-			await refreshRouterModels()
-
 			addMessage({
 				id: Date.now().toString(),
 				type: "system",
-				content: `Switched to team: **${targetOrg.name}** (${targetOrg.role})`,
+				content: `✓ Switched to team: **${targetOrg.name}** (${targetOrg.role})`,
 				ts: Date.now(),
+			})
+
+			// Update provider configuration with new organization ID (use the actual org.id)
+			await updateProvider(currentProvider.id, {
+				kilocodeOrganizationId: targetOrg.id,
 			})
 		} else {
 			// No profile data loaded
@@ -203,7 +198,7 @@ async function teamAutocompleteProvider(context: ArgumentProviderContext): Promi
 		return []
 	}
 
-	const { currentProvider, profileData, profileLoading } = context.commandContext
+	const { currentProvider, profileData, profileLoading } = context.commandContext as any
 
 	// Check if user is authenticated with Kilocode
 	if (!currentProvider || currentProvider.provider !== "kilocode") {
@@ -260,18 +255,15 @@ export const teamsCommand: Command = {
 	aliases: ["team", "org", "orgs"],
 	description: "Manage team/organization selection",
 	usage: "/teams [subcommand] [args]",
-	examples: ["/teams", "/teams list", "/teams select personal", "/teams select kilo-code", "/teams select my-team"],
+	examples: ["/teams", "/teams select personal", "/teams select kilo-code", "/teams select my-team"],
 	category: "settings",
 	priority: 10,
 	arguments: [
 		{
 			name: "subcommand",
-			description: "Subcommand: list, select",
+			description: "Subcommand: select",
 			required: false,
-			values: [
-				{ value: "list", description: "List all available teams" },
-				{ value: "select", description: "Switch to a different team" },
-			],
+			values: [{ value: "select", description: "Switch to a different team" }],
 		},
 		{
 			name: "team-name",
@@ -306,10 +298,6 @@ export const teamsCommand: Command = {
 
 		// Handle subcommands
 		switch (subcommand) {
-			case "list":
-				await listTeams(context)
-				break
-
 			case "select":
 				if (args.length < 2 || !args[1]) {
 					context.addMessage({

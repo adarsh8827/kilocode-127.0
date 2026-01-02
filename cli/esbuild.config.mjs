@@ -1,13 +1,7 @@
 /* eslint-disable no-undef */
 import esbuild from "esbuild"
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { chmodSync, mkdirSync, copyFileSync } from "fs"
 import { rimrafSync } from "rimraf"
-
-// ESM Polyfill
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // Function to copy post-build files
 function copyPostBuildFiles() {
@@ -99,6 +93,7 @@ const __dirname = __dirname__(__filename);
 		"diff-match-patch",
 		"dotenv",
 		"eventemitter3",
+		"exceljs",
 		"fast-deep-equal",
 		"fast-glob",
 		"fast-xml-parser",
@@ -111,6 +106,13 @@ const __dirname = __dirname__(__filename);
 		"gray-matter",
 		"i18next",
 		"ignore",
+		"ink",
+		"ink-big-text",
+		"ink-gradient",
+		"ink-select-input",
+		"ink-spinner",
+		"ink-table",
+		"ink-text-input",
 		"is-wsl",
 		"isbinaryfile",
 		"jotai",
@@ -134,7 +136,7 @@ const __dirname = __dirname__(__filename);
 		"pkce-challenge",
 		"pretty-bytes",
 		"proper-lockfile",
-		"ps-list",
+		"ps-tree",
 		"puppeteer-chromium-resolver",
 		"puppeteer-core",
 		"react",
@@ -161,7 +163,6 @@ const __dirname = __dirname__(__filename);
 		"vscode-uri",
 		"web-tree-sitter",
 		"workerpool",
-		"xlsx",
 		"yaml",
 		"zod",
 	],
@@ -170,9 +171,6 @@ const __dirname = __dirname__(__filename);
 	treeShaking: true,
 	logLevel: "info",
 	plugins: [afterBuildPlugin],
-	alias: {
-		'is-in-ci': path.resolve(__dirname, 'src/patches/is-in-ci.ts'),
-	}
 }
 
 if (process.argv.includes("--watch")) {

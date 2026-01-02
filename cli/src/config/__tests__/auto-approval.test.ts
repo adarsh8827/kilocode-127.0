@@ -9,7 +9,7 @@ describe("Auto Approval Configuration", () => {
 				enabled: true,
 				read: {
 					enabled: true,
-					outside: false,
+					outside: true,
 				},
 				write: {
 					enabled: true,

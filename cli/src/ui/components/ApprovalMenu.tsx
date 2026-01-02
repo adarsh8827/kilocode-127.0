@@ -23,6 +23,9 @@ export const ApprovalMenu: React.FC<ApprovalMenuProps> = ({ options, selectedInd
 
 	return (
 		<Box flexDirection="column" borderStyle="round" borderColor={theme.actions.pending} paddingX={1}>
+			<Text bold color={theme.actions.pending}>
+				[!] Action Required:
+			</Text>
 			{options.map((option, index) => (
 				<ApprovalOptionRow
 					key={option.key || `${option.action}-${index}`}
@@ -49,8 +52,7 @@ const ApprovalOptionRow: React.FC<ApprovalOptionRowProps> = ({ option, isSelecte
 
 	const themeColor = getThemeColor(option.color)
 	const color = isSelected ? themeColor : theme.ui.text.primary
-	// Use appropriate icon based on action type
-	const icon = option.action === "approve" || option.action === "approve-and-remember" ? "✓" : "✗"
+	const icon = option.action === "approve" ? "✓" : "✗"
 
 	return (
 		<Box>

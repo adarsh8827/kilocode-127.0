@@ -126,28 +126,9 @@ export const approvalOptionsAtom = atom<ApprovalOption[]>((get) => {
 
 	// Determine button labels based on ask type
 	let approveLabel = "Approve"
-	let rejectLabel = "Reject"
+	const rejectLabel = "Reject"
 
-	if (pendingMessage.ask === "command_output") {
-		// Special handling for command output - Continue/Abort
-		return [
-			{
-				label: "Continue",
-				action: "approve" as const,
-				hotkey: "y",
-				color: "green" as const,
-			},
-			{
-				label: "Abort",
-				action: "reject" as const,
-				hotkey: "n",
-				color: "red" as const,
-			},
-		]
-	} else if (pendingMessage.ask === "checkpoint_restore") {
-		approveLabel = "Restore Checkpoint"
-		rejectLabel = "Cancel"
-	} else if (pendingMessage.ask === "tool") {
+	if (pendingMessage.ask === "tool") {
 		try {
 			const toolData = JSON.parse(pendingMessage.text || "{}")
 			const tool = toolData.tool
@@ -258,10 +239,7 @@ export const setPendingApprovalAtom = atom(null, (get, set, message: ExtensionCh
 	}
 
 	// Reset selection if this is a new message (different timestamp)
-	// EXCEPT for command_output messages where we want to preserve selection
-	// as output streams in (to allow users to abort long-running commands)
-	const shouldResetSelection = isNewMessage && message?.ask !== "command_output"
-	if (shouldResetSelection) {
+	if (isNewMessage) {
 		set(selectedIndexAtom, 0)
 	}
 })
@@ -381,16 +359,10 @@ export const rejectCallbackAtom = atom<(() => Promise<void>) | null>(null)
 export const executeSelectedCallbackAtom = atom<(() => Promise<void>) | null>(null)
 
 /**
- * Atom to store the sendTerminalOperation callback
- * The hook sets this to its sendTerminalOperation function
- */
-export const sendTerminalOperationCallbackAtom = atom<((operation: "continue" | "abort") => Promise<void>) | null>(null)
-
-/**
  * Action atom to approve the pending request
  * Calls the callback set by the hook
  */
-export const approveAtom = atom(null, async (get, _set) => {
+export const approveAtom = atom(null, async (get, set) => {
 	const callback = get(approveCallbackAtom)
 	if (callback) {
 		await callback()
@@ -401,7 +373,7 @@ export const approveAtom = atom(null, async (get, _set) => {
  * Action atom to reject the pending request
  * Calls the callback set by the hook
  */
-export const rejectAtom = atom(null, async (get, _set) => {
+export const rejectAtom = atom(null, async (get, set) => {
 	const callback = get(rejectCallbackAtom)
 	if (callback) {
 		await callback()
@@ -412,20 +384,9 @@ export const rejectAtom = atom(null, async (get, _set) => {
  * Action atom to execute the currently selected option
  * Calls the callback set by the hook
  */
-export const executeSelectedAtom = atom(null, async (get, _set) => {
+export const executeSelectedAtom = atom(null, async (get, set) => {
 	const callback = get(executeSelectedCallbackAtom)
 	if (callback) {
 		await callback()
-	}
-})
-
-/**
- * Action atom to send terminal operation (continue or abort)
- * Calls the callback set by the hook
- */
-export const sendTerminalOperationAtom = atom(null, async (get, _set, operation: "continue" | "abort") => {
-	const callback = get(sendTerminalOperationCallbackAtom)
-	if (callback) {
-		await callback(operation)
 	}
 })

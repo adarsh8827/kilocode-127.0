@@ -193,9 +193,11 @@ export function Testimonials() {
 			<div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
 				<div className="mx-auto mb-8 md:max-w-2xl text-center">
 					<h2 className="text-4xl font-bold tracking-tight sm:text-5xl">
-						More than 1 million people are shipping with Roo.
+						Developers <em>really</em> shipping with AI are using Roo Code
 					</h2>
-					<p className="mt-6 text-lg text-muted-foreground">And they have some great things to say.</p>
+					<p className="mt-6 text-lg text-muted-foreground">
+						Join more than 1M people revolutionizing their workflow worldwide
+					</p>
 				</div>
 
 				<motion.div
@@ -245,11 +247,7 @@ export function Testimonials() {
 														{testimonial.name}
 													</h3>
 													<p className="text-sm text-muted-foreground transition-colors duration-300 dark:text-muted-foreground/80">
-														{testimonial.role !== "Reviewer" && (
-															<>
-																{testimonial.role} at {testimonial.origin}
-															</>
-														)}
+														{testimonial.role} at {testimonial.origin}
 														{testimonial.stars && (
 															<span className="flex items-center mt-1">
 																{" "}

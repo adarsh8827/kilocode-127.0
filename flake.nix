@@ -68,8 +68,6 @@
         expat
         alsa-lib
         pulseaudio
-        # Github
-        act
       ];
 
       # Set library path for dynamic linking

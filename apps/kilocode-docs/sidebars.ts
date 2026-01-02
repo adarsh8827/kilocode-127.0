@@ -53,31 +53,27 @@ const sidebars: SidebarsConfig = {
 							items: [
 								"providers/anthropic",
 								"providers/bedrock",
-								"providers/cerebras", // kilocode_change
 								"providers/chutes-ai",
 								"providers/claude-code",
 								"providers/deepseek",
 								"providers/fireworks",
-								"providers/gemini",
+								"providers/synthetic", // kilocode_change
+								"providers/vertex",
 								"providers/glama",
+								"providers/gemini",
 								"providers/groq",
 								"providers/human-relay",
-								"providers/inception", // kilocode_change
 								"providers/lmstudio",
-								"providers/minimax", // kilocode_change (M2 model update)
 								"providers/mistral",
-								"providers/moonshot", // kilocode_change
 								"providers/ollama",
 								"providers/openai",
 								"providers/openai-compatible",
 								"providers/openrouter",
 								"providers/ovhcloud", // kilocode_change
 								"providers/requesty",
-								"providers/synthetic", // kilocode_change
 								"providers/unbound",
 								"providers/v0",
 								"providers/vercel-ai-gateway",
-								"providers/vertex",
 								"providers/virtual-quota-fallback",
 								"providers/vscode-lm",
 								"providers/xai",
@@ -130,7 +126,6 @@ const sidebars: SidebarsConfig = {
 					items: [
 						"advanced-usage/custom-rules",
 						"advanced-usage/custom-instructions",
-						"advanced-usage/migrating-from-cursor-windsurf",
 						"features/slash-commands/workflows",
 					],
 				},
@@ -156,15 +151,6 @@ const sidebars: SidebarsConfig = {
 				},
 				"features/auto-launch-configuration",
 				"advanced-usage/auto-cleanup",
-				"advanced-usage/integrations",
-				"advanced-usage/slackbot",
-				"advanced-usage/appbuilder",
-				"advanced-usage/cloud-agent",
-				"advanced-usage/code-reviews",
-				"advanced-usage/deploy",
-				"advanced-usage/managed-indexing",
-				"advanced-usage/agent-manager",
-				"advanced-usage/sessions",
 				"features/experimental/experimental-features",
 			],
 		},
@@ -190,29 +176,8 @@ const sidebars: SidebarsConfig = {
 					],
 				},
 				"features/shell-integration",
-			],
-		},
-		{
-			type: "category",
-			label: "Contributing",
-			items: [
-				"contributing/index",
-				"contributing/architecture",
-				"contributing/development-environment",
-				{
-					type: "category",
-					label: "Engineering Specs",
-					items: [
-						"contributing/specs/index",
-						"contributing/specs/spec-template",
-						"contributing/specs/spec-enterprise-mcp-controls",
-						"contributing/specs/spec-onboarding-engagement-improvements",
-						"contributing/specs/spec-organization-modes-library",
-						"contributing/specs/spec-security-reviews",
-						"contributing/specs/spec-track-repo-url",
-						"contributing/specs/spec-voice-transcription",
-					],
-				},
+				"extending/contributing-to-kilo",
+				"extending/development-environment",
 			],
 		},
 		{
@@ -225,7 +190,6 @@ const sidebars: SidebarsConfig = {
 				"features/tools/ask-followup-question",
 				"features/tools/attempt-completion",
 				"features/tools/browser-action",
-				"features/tools/delete-file",
 				"features/tools/execute-command",
 				"features/tools/list-code-definition-names",
 				"features/tools/list-files",

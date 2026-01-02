@@ -1,12 +1,11 @@
 import type { Metadata } from "next"
 import { SEO } from "@/lib/seo"
-import { ogImageUrl } from "@/lib/og"
 
-const TITLE = "Our Privacy Policy"
+const TITLE = "Privacy Policy"
 const DESCRIPTION =
 	"Privacy policy for Roo Code Cloud and marketing website. Learn how we handle your data and protect your privacy."
-const OG_DESCRIPTION = ""
 const PATH = "/privacy"
+const OG_IMAGE = SEO.ogImage
 
 export const metadata: Metadata = {
 	title: TITLE,
@@ -21,10 +20,10 @@ export const metadata: Metadata = {
 		siteName: SEO.name,
 		images: [
 			{
-				url: ogImageUrl(TITLE, OG_DESCRIPTION),
-				width: 1200,
-				height: 630,
-				alt: TITLE,
+				url: OG_IMAGE.url,
+				width: OG_IMAGE.width,
+				height: OG_IMAGE.height,
+				alt: OG_IMAGE.alt,
 			},
 		],
 		locale: SEO.locale,
@@ -34,7 +33,7 @@ export const metadata: Metadata = {
 		card: SEO.twitterCard,
 		title: TITLE,
 		description: DESCRIPTION,
-		images: [ogImageUrl(TITLE, OG_DESCRIPTION)],
+		images: [OG_IMAGE.url],
 	},
 	keywords: [...SEO.keywords, "privacy", "data protection", "GDPR", "security"],
 }

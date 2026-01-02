@@ -13,9 +13,9 @@ vi.mock("../../utils/extension-paths.js", () => ({
 
 describe("ExtensionService", () => {
 	let service: ExtensionService
-	let mockExtensionModule: unknown
-	let originalRequire: unknown
-	let mockVSCodeAPI: unknown
+	let mockExtensionModule: any
+	let originalRequire: any
+	let mockVSCodeAPI: any
 
 	beforeAll(() => {
 		// Create a mock VSCode API
@@ -95,19 +95,7 @@ describe("ExtensionService", () => {
 
 		// Create a mock extension module
 		mockExtensionModule = {
-			activate: vi.fn(async (_context) => {
-				// Register a mock webview provider immediately to prevent hanging
-				// This simulates the extension registering its provider during activation
-				const globalWithHost = global as {
-					__extensionHost?: { registerWebviewProvider: (id: string, provider: unknown) => void }
-				}
-				if (globalWithHost.__extensionHost) {
-					const mockProvider = {
-						handleCLIMessage: vi.fn(async () => {}),
-					}
-					globalWithHost.__extensionHost.registerWebviewProvider("kilo-code.SidebarProvider", mockProvider)
-				}
-
+			activate: vi.fn(async () => {
 				// Return a mock API
 				return {
 					getState: vi.fn(() => ({
@@ -147,18 +135,18 @@ describe("ExtensionService", () => {
 		const Module = require("module")
 		originalRequire = Module.prototype.require
 
-		Module.prototype.require = function (this: unknown, id: string) {
+		Module.prototype.require = function (this: any, id: string) {
 			if (id === "/mock/extension/dist/extension.js") {
 				return mockExtensionModule
 			}
 			if (id === "vscode" || id === "vscode-mock") {
 				return mockVSCodeAPI
 			}
-			return (originalRequire as (id: string) => unknown).call(this, id)
+			return originalRequire.call(this, id)
 		}
 
 		// Set global vscode
-		;(global as unknown as { vscode: unknown }).vscode = mockVSCodeAPI
+		;(global as any).vscode = mockVSCodeAPI
 	})
 
 	afterAll(() => {
@@ -169,7 +157,7 @@ describe("ExtensionService", () => {
 			Module.prototype.require = originalRequire
 		}
 		// Clean up global vscode
-		delete (global as unknown as { vscode?: unknown }).vscode
+		delete (global as any).vscode
 	})
 
 	afterEach(async () => {
@@ -268,9 +256,6 @@ describe("ExtensionService", () => {
 		it("should emit stateChange event when state changes", async () => {
 			await service.initialize()
 
-			// Mark webview as ready to allow messages to be processed
-			service.getExtensionHost().markWebviewReady()
-
 			const stateChangeHandler = vi.fn()
 			service.on("stateChange", stateChangeHandler)
 
@@ -289,9 +274,6 @@ describe("ExtensionService", () => {
 
 		it("should emit message event for extension messages", async () => {
 			await service.initialize()
-
-			// Mark webview as ready to allow messages to be processed
-			service.getExtensionHost().markWebviewReady()
 
 			const messageHandler = vi.fn()
 			service.on("message", messageHandler)

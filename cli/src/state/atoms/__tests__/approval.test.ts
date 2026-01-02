@@ -3,6 +3,7 @@
  */
 
 import { describe, it, expect } from "vitest"
+import { atom } from "jotai"
 import { createStore } from "jotai"
 import { approvalOptionsAtom, pendingApprovalAtom } from "../approval.js"
 import type { ExtensionChatMessage } from "../../../types/messages.js"

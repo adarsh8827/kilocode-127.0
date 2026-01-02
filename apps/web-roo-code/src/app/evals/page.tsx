@@ -2,7 +2,6 @@ import type { Metadata } from "next"
 
 import { getEvalRuns } from "@/actions/evals"
 import { SEO } from "@/lib/seo"
-import { ogImageUrl } from "@/lib/og"
 
 import { Evals } from "./evals"
 
@@ -11,8 +10,13 @@ export const dynamic = "force-dynamic"
 
 const TITLE = "Evals"
 const DESCRIPTION = "Explore quantitative evals of LLM coding skills across tasks and providers."
-const OG_DESCRIPTION = "Quantitative evals of LLM coding skills"
 const PATH = "/evals"
+const IMAGE = {
+	url: "https://i.imgur.com/ijP7aZm.png",
+	width: 1954,
+	height: 1088,
+	alt: "Roo Code Evals – LLM coding benchmarks",
+}
 
 export const metadata: Metadata = {
 	title: TITLE,
@@ -25,14 +29,7 @@ export const metadata: Metadata = {
 		description: DESCRIPTION,
 		url: `${SEO.url}${PATH}`,
 		siteName: SEO.name,
-		images: [
-			{
-				url: ogImageUrl(TITLE, OG_DESCRIPTION),
-				width: 1200,
-				height: 630,
-				alt: TITLE,
-			},
-		],
+		images: [IMAGE],
 		locale: SEO.locale,
 		type: "website",
 	},
@@ -40,7 +37,7 @@ export const metadata: Metadata = {
 		card: SEO.twitterCard,
 		title: TITLE,
 		description: DESCRIPTION,
-		images: [ogImageUrl(TITLE, OG_DESCRIPTION)],
+		images: [IMAGE.url],
 	},
 	keywords: [...SEO.keywords, "benchmarks", "LLM evals", "coding evaluations", "model comparison"],
 }

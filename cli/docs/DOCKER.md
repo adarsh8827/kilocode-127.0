@@ -1,4 +1,4 @@
-# Kilo Code CLI - Docker
+# Kilo Code CLI - Docker Guide
 
 A containerized version of the Kilo Code CLI with full browser automation support.
 
@@ -6,45 +6,37 @@ A containerized version of the Kilo Code CLI with full browser automation suppor
 
 ### Build the Image
 
-```bash
-pnpm install
-pnpm cli:bundle
-```
-
-### Debian-based Image
+**Basic build** (no metadata required):
 
 ```bash
 cd cli
-docker build \
-  --target debian \
-  --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') \
-  --build-arg VCS_REF=$(git rev-parse --short HEAD) \
-  --build-arg VERSION=$(jq -r '.version' package.json) \
-  -t kiloai/cli:$(jq -r '.version' package.json) \
-  -t kiloai/cli:latest \
-  .
+docker build -t kilocode/cli .
 ```
 
-### Alpine-based Image
+**With build metadata** (optional, for production/CI):
 
 ```bash
-cd cli
 docker build \
-  --target alpine \
   --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') \
   --build-arg VCS_REF=$(git rev-parse --short HEAD) \
   --build-arg VERSION=$(jq -r '.version' package.json) \
-  -t kiloai/cli:$(jq -r '.version' package.json) \
-  -t kiloai/cli:latest-alpine \
+  -t kilocode/cli:$(jq -r '.version' package.json) \
+  -t kilocode/cli:latest \
   .
 ```
+
+The build arguments are all optional and have defaults:
+
+- `BUILD_DATE` - defaults to empty string
+- `VCS_REF` - defaults to empty string
+- `VERSION` - defaults to "latest"
 
 ### 1. Basic Interactive Mode
 
 Run the CLI interactively in your current directory:
 
 ```bash
-docker run -it --rm -v $(pwd):/workspace kiloai/cli
+docker run -it --rm -v $(pwd):/workspace kilocode/cli
 ```
 
 ### 2. Architect Mode
@@ -52,7 +44,7 @@ docker run -it --rm -v $(pwd):/workspace kiloai/cli
 Start in architect mode for planning and design:
 
 ```bash
-docker run -it --rm -v $(pwd):/workspace kiloai/cli --mode architect
+docker run -it --rm -v $(pwd):/workspace kilocode/cli --mode architect
 ```
 
 ### 3. One-Shot Autonomous Mode
@@ -60,7 +52,7 @@ docker run -it --rm -v $(pwd):/workspace kiloai/cli --mode architect
 Execute a single task and exit automatically:
 
 ```bash
-docker run --rm -v $(pwd):/workspace kiloai/cli --auto "Run tests and fix any issues"
+docker run --rm -v $(pwd):/workspace kilocode/cli --auto "Run tests and fix any issues"
 ```
 
 ### 4. With Local Configuration
@@ -71,7 +63,7 @@ Mount your existing Kilo Code configuration to avoid setup prompts:
 docker run -it --rm \
   -v $(pwd):/workspace \
   -v ~/.kilocode:/home/kilocode/.kilocode \
-  kiloai/cli
+  kilocode/cli
 ```
 
 ---
@@ -81,7 +73,7 @@ docker run -it --rm \
 ### Custom Workspace Path
 
 ```bash
-docker run -it --rm -v /path/to/project:/workspace kiloai/cli
+docker run -it --rm -v /path/to/project:/workspace kilocode/cli
 ```
 
 ### Mount Git Configuration
@@ -93,7 +85,7 @@ docker run -it --rm \
   -v $(pwd):/workspace \
   -v ~/.kilocode:/home/kilocode/.kilocode \
   -v ~/.gitconfig:/home/kilocode/.gitconfig:ro \
-  kiloai/cli
+  kilocode/cli
 ```
 
 ### Environment Variables
@@ -102,7 +94,7 @@ docker run -it --rm \
 docker run -it --rm \
   -v $(pwd):/workspace \
   -e KILOCODE_MODE=code \
-  kiloai/cli
+  kilocode/cli
 ```
 
 ### With Timeout
@@ -110,7 +102,7 @@ docker run -it --rm \
 ```bash
 docker run --rm \
   -v $(pwd):/workspace \
-  kiloai/cli /usr/local/bin/kilocode --timeout 300 --auto "Run tests"
+  kilocode/cli /usr/local/bin/kilocode --timeout 300 --auto "Run tests"
 ```
 
 ## Configuration
@@ -132,7 +124,7 @@ docker volume create kilocode-config
 docker run -it --rm \
   -v $(pwd):/workspace \
   -v kilocode-config:/home/kilocode/.kilocode \
-  kiloai/cli
+  kilocode/cli
 ```
 
 ### Terminal Colors and Theme
@@ -156,7 +148,7 @@ docker run -it --rm \
   -v $(pwd):/workspace \
   -e FORCE_COLOR=1 \
   -e COLORTERM=truecolor \
-  kiloai/cli
+  kilocode/cli
 ```
 
 **Option 3: Pass terminal info**
@@ -165,5 +157,5 @@ docker run -it --rm \
 docker run -it --rm \
   -v $(pwd):/workspace \
   -e TERM=$TERM \
-  kiloai/cli
+  kilocode/cli
 ```

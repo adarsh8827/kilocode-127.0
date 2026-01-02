@@ -6,10 +6,10 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest"
+import React from "react"
 import { render } from "ink-testing-library"
 import { ExtensionMessageRow } from "../ExtensionMessageRow.js"
 import type { ExtensionChatMessage } from "../../../../types/messages.js"
-import type { ClineAsk, ClineSay } from "@roo-code/types"
 
 // Mock the logs service
 vi.mock("../../../../services/logs.js", () => ({
@@ -109,7 +109,7 @@ describe("ExtensionMessageRow", () => {
 			const message: ExtensionChatMessage = {
 				ts: Date.now(),
 				type: "ask",
-				ask: "followup" as unknown as ClineAsk, // Use valid type but test unknown handling
+				ask: "unknown_type" as any,
 				text: "Unknown ask type",
 			}
 
@@ -183,11 +183,26 @@ describe("ExtensionMessageRow", () => {
 			expect(lastFrame()).not.toContain("Unknown message type")
 		})
 
+		it("should route 'say' message with type 'command_output' to SayCommandOutputMessage", () => {
+			const message: ExtensionChatMessage = {
+				ts: Date.now(),
+				type: "say",
+				say: "command_output",
+				text: "Command executed successfully",
+			}
+
+			const { lastFrame } = render(<ExtensionMessageRow message={message} />)
+
+			expect(lastFrame()).toBeDefined()
+			expect(lastFrame()).toContain("Command executed successfully")
+			expect(lastFrame()).not.toContain("Unknown say type")
+		})
+
 		it("should show default message for unknown 'say' type", () => {
 			const message: ExtensionChatMessage = {
 				ts: Date.now(),
 				type: "say",
-				say: "text" as unknown as ClineSay, // Use valid type but test unknown handling
+				say: "unknown_type" as any,
 				text: "Unknown say type",
 			}
 
@@ -203,7 +218,7 @@ describe("ExtensionMessageRow", () => {
 		it("should show fallback for completely unknown message type", () => {
 			const message: ExtensionChatMessage = {
 				ts: Date.now(),
-				type: "unknown" as unknown as ExtensionChatMessage["type"],
+				type: "unknown" as any,
 				text: "Unknown message",
 			}
 
@@ -384,7 +399,7 @@ describe("ExtensionMessageRow", () => {
 			const message: ExtensionChatMessage = {
 				ts: Date.now(),
 				type: "say",
-				say: "user_feedback_diff",
+				say: "tool",
 				text: JSON.stringify({
 					tool: "editedExistingFile",
 					path: "src/test.ts",

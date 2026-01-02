@@ -5,7 +5,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import { teamsCommand } from "../teams.js"
 import type { CommandContext } from "../core/types.js"
-import { createMockContext } from "./helpers/mockContext.js"
 
 describe("/teams command", () => {
 	let mockContext: CommandContext
@@ -16,17 +15,32 @@ describe("/teams command", () => {
 		addMessageMock = vi.fn()
 		updateProviderMock = vi.fn().mockResolvedValue(undefined)
 
-		mockContext = createMockContext({
+		mockContext = {
 			input: "/teams",
+			args: [],
+			options: {},
+			sendMessage: vi.fn().mockResolvedValue(undefined),
 			addMessage: addMessageMock,
+			clearMessages: vi.fn(),
+			replaceMessages: vi.fn(),
+			clearTask: vi.fn().mockResolvedValue(undefined),
+			setMode: vi.fn(),
+			exit: vi.fn(),
+			routerModels: null,
 			currentProvider: {
 				id: "test-provider",
 				provider: "kilocode",
 				kilocodeToken: "test-token",
 			},
 			kilocodeDefaultModel: "test-model",
+			updateProviderModel: vi.fn().mockResolvedValue(undefined),
+			refreshRouterModels: vi.fn().mockResolvedValue(undefined),
 			updateProvider: updateProviderMock,
-		})
+			profileData: null,
+			balanceData: null,
+			profileLoading: false,
+			balanceLoading: false,
+		}
 	})
 
 	describe("Command metadata", () => {
@@ -125,7 +139,7 @@ describe("/teams command", () => {
 
 			const message = addMessageMock.mock.calls[0][0]
 			expect(message.type).toBe("system")
-			expect(message.content).toContain("https://app.kilo.ai/get-started/teams")
+			expect(message.content).toContain("https://app.kilocode.ai/get-started/teams")
 		})
 
 		it("should list all teams including organizations", async () => {
@@ -200,14 +214,12 @@ describe("/teams command", () => {
 				kilocodeOrganizationId: undefined,
 			})
 
-			const successMessage = addMessageMock.mock.calls.find((call: unknown[]) => {
-				const msg = call[0] as { content?: string }
-				return msg.content?.includes("Switched to")
-			})
+			const successMessage = addMessageMock.mock.calls.find((call: any) =>
+				call[0].content?.includes("Switched to"),
+			)
 			expect(successMessage).toBeDefined()
 			if (successMessage) {
-				const msg = successMessage[0] as { content: string }
-				expect(msg.content).toContain("Personal")
+				expect(successMessage[0].content).toContain("Personal")
 			}
 		})
 
@@ -235,14 +247,12 @@ describe("/teams command", () => {
 				kilocodeOrganizationId: "org-123",
 			})
 
-			const successMessage = addMessageMock.mock.calls.find((call: unknown[]) => {
-				const msg = call[0] as { content?: string }
-				return msg.content?.includes("Switched to team")
-			})
+			const successMessage = addMessageMock.mock.calls.find((call: any) =>
+				call[0].content?.includes("Switched to team"),
+			)
 			expect(successMessage).toBeDefined()
 			if (successMessage) {
-				const msg = successMessage[0] as { content: string }
-				expect(msg.content).toContain("Target Team")
+				expect(successMessage[0].content).toContain("Target Team")
 			}
 		})
 
@@ -270,14 +280,12 @@ describe("/teams command", () => {
 				kilocodeOrganizationId: "org-456",
 			})
 
-			const successMessage = addMessageMock.mock.calls.find((call: unknown[]) => {
-				const msg = call[0] as { content?: string }
-				return msg.content?.includes("Switched to team")
-			})
+			const successMessage = addMessageMock.mock.calls.find((call: any) =>
+				call[0].content?.includes("Switched to team"),
+			)
 			expect(successMessage).toBeDefined()
 			if (successMessage) {
-				const msg = successMessage[0] as { content: string }
-				expect(msg.content).toContain("Kilo Code")
+				expect(successMessage[0].content).toContain("Kilo Code")
 			}
 		})
 
@@ -305,14 +313,12 @@ describe("/teams command", () => {
 				kilocodeOrganizationId: "org-789",
 			})
 
-			const successMessage = addMessageMock.mock.calls.find((call: unknown[]) => {
-				const msg = call[0] as { content?: string }
-				return msg.content?.includes("Switched to team")
-			})
+			const successMessage = addMessageMock.mock.calls.find((call: any) =>
+				call[0].content?.includes("Switched to team"),
+			)
 			expect(successMessage).toBeDefined()
 			if (successMessage) {
-				const msg = successMessage[0] as { content: string }
-				expect(msg.content).toContain("My Awesome Team!")
+				expect(successMessage[0].content).toContain("My Awesome Team!")
 			}
 		})
 
@@ -330,10 +336,9 @@ describe("/teams command", () => {
 
 			await teamsCommand.handler(mockContext)
 
-			const errorMessage = addMessageMock.mock.calls.find((call: unknown[]) => {
-				const msg = call[0] as { type: string; content?: string }
-				return msg.type === "error" && msg.content?.includes("not found")
-			})
+			const errorMessage = addMessageMock.mock.calls.find(
+				(call: any) => call[0].type === "error" && call[0].content?.includes("not found"),
+			)
 			expect(errorMessage).toBeDefined()
 		})
 
@@ -366,10 +371,9 @@ describe("/teams command", () => {
 
 			await teamsCommand.handler(mockContext)
 
-			const errorMessage = addMessageMock.mock.calls.find((call: unknown[]) => {
-				const msg = call[0] as { type: string; content?: string }
-				return msg.type === "error" && msg.content?.includes("Failed to switch team")
-			})
+			const errorMessage = addMessageMock.mock.calls.find(
+				(call: any) => call[0].type === "error" && call[0].content?.includes("Failed to switch team"),
+			)
 			expect(errorMessage).toBeDefined()
 		})
 	})

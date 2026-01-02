@@ -6,10 +6,9 @@ import { describe, it, expect, beforeEach } from "vitest"
 import { getArgumentSuggestions } from "../../services/autocomplete.js"
 import type { RouterModels } from "../../types/messages.js"
 import type { ProviderConfig } from "../../config/types.js"
-import type { ArgumentProviderContext } from "../core/types.js"
 
 describe("Model Command Autocomplete", () => {
-	let mockCommandContext: Partial<ArgumentProviderContext["commandContext"]>
+	let mockCommandContext: any
 
 	beforeEach(() => {
 		// Mock command context with router models
@@ -72,10 +71,7 @@ describe("Model Command Autocomplete", () => {
 		// multi-argument commands. The fix works in the real application where
 		// autocomplete is triggered through the UI differently.
 		const input = "/model select gpt"
-		const suggestions = await getArgumentSuggestions(
-			input,
-			mockCommandContext as ArgumentProviderContext["commandContext"],
-		)
+		const suggestions = await getArgumentSuggestions(input, mockCommandContext)
 
 		expect(suggestions).toBeDefined()
 		expect(suggestions.length).toBeGreaterThan(0)
@@ -90,10 +86,7 @@ describe("Model Command Autocomplete", () => {
 		// multi-argument commands. The fix works in the real application where
 		// autocomplete is triggered through the UI differently.
 		const input = "/model select "
-		const suggestions = await getArgumentSuggestions(
-			input,
-			mockCommandContext as ArgumentProviderContext["commandContext"],
-		)
+		const suggestions = await getArgumentSuggestions(input, mockCommandContext)
 
 		expect(suggestions).toBeDefined()
 		expect(suggestions.length).toBe(3) // All 3 mock models
@@ -104,10 +97,7 @@ describe("Model Command Autocomplete", () => {
 		// multi-argument commands. The fix works in the real application where
 		// autocomplete is triggered through the UI differently.
 		const input = "/model select claude"
-		const suggestions = await getArgumentSuggestions(
-			input,
-			mockCommandContext as ArgumentProviderContext["commandContext"],
-		)
+		const suggestions = await getArgumentSuggestions(input, mockCommandContext)
 
 		expect(suggestions).toBeDefined()
 		expect(suggestions.length).toBeGreaterThan(0)
@@ -131,10 +121,7 @@ describe("Model Command Autocomplete", () => {
 			...mockCommandContext,
 			currentProvider: null,
 		}
-		const suggestions = await getArgumentSuggestions(
-			input,
-			contextWithoutProvider as ArgumentProviderContext["commandContext"],
-		)
+		const suggestions = await getArgumentSuggestions(input, contextWithoutProvider)
 
 		expect(suggestions).toBeDefined()
 		expect(suggestions.length).toBe(0)
@@ -146,10 +133,7 @@ describe("Model Command Autocomplete", () => {
 			...mockCommandContext,
 			routerModels: null,
 		}
-		const suggestions = await getArgumentSuggestions(
-			input,
-			contextWithoutModels as ArgumentProviderContext["commandContext"],
-		)
+		const suggestions = await getArgumentSuggestions(input, contextWithoutModels)
 
 		expect(suggestions).toBeDefined()
 		expect(suggestions.length).toBe(0)

@@ -207,7 +207,10 @@ notify-send -i dialog-information "Test Title" "Test message"
 - **Solution 1:** Check System Preferences → Notifications → Terminal (or VSCode) → Allow notifications
 - **Solution 2:** Verify Do Not Disturb is disabled
 - **Solution 3:** Test with the manual commands above
-- **Solution 4:** Ensure terminal-notifier is properly installed: `brew install terminal-notifier`
+
+**Problem:** Notifications not appearing
+
+- **Solution:** Ensure terminal-notifier is properly installed: `brew install terminal-notifier`
 
 #### Windows Issues
 

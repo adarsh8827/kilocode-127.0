@@ -8,7 +8,6 @@ import {
 	AskToolMessage,
 	AskMistakeLimitMessage,
 	AskCommandMessage,
-	AskCommandOutputMessage,
 	AskUseMcpServerMessage,
 	AskFollowupMessage,
 	AskCondenseMessage,
@@ -18,7 +17,6 @@ import {
 	AskAutoApprovalMaxReachedMessage,
 	AskBrowserActionLaunchMessage,
 	AskResumeTaskMessage,
-	AskCheckpointRestoreMessage,
 } from "./ask/index.js"
 
 /**
@@ -53,7 +51,7 @@ export const AskMessageRouter: React.FC<MessageComponentProps> = ({ message }) =
 			return <AskCommandMessage message={message} />
 
 		case "command_output":
-			return <AskCommandOutputMessage message={message} />
+			return null
 
 		case "browser_action_launch":
 			return <AskBrowserActionLaunchMessage message={message} />
@@ -85,9 +83,6 @@ export const AskMessageRouter: React.FC<MessageComponentProps> = ({ message }) =
 		case "resume_task":
 		case "resume_completed_task":
 			return <AskResumeTaskMessage message={message} />
-
-		case "checkpoint_restore":
-			return <AskCheckpointRestoreMessage message={message} />
 
 		default:
 			return <DefaultAskMessage message={message} />

@@ -76,3 +76,223 @@ assets/docs/**
 # Ignore IntelliJ and Qodo plugin folders
 .idea/**
 .qodo/**
+
+# Ignore test files and fixtures
+**/__tests__/**
+**/*.test.ts
+**/*.test.js
+**/*.spec.ts
+**/*.spec.js
+**/test-fixtures/**
+**/fixtures/**
+
+# Ignore documentation files
+**/*.md
+!README.md
+!CHANGELOG.md
+
+# Ignore source maps in node_modules
+node_modules/**/*.map
+
+# Ignore unnecessary binaries
+**/.bin/**
+
+# Ignore test files and fixtures
+**/__tests__/**
+**/*.test.ts
+**/*.test.js
+**/*.spec.ts
+**/*.spec.js
+**/test-fixtures/**
+**/fixtures/**
+
+# Ignore documentation files
+**/*.md
+!README.md
+!CHANGELOG.md
+
+# Ignore source maps in node_modules
+node_modules/**/*.map
+
+# Ignore unnecessary binaries
+**/.bin/**
+
+# Ignore test files and fixtures
+**/__tests__/**
+**/*.test.ts
+**/*.test.js
+**/*.spec.ts
+**/*.spec.js
+**/test-fixtures/**
+**/fixtures/**
+
+# Ignore documentation files
+**/*.md
+!README.md
+!CHANGELOG.md
+
+# Ignore source maps in node_modules
+node_modules/**/*.map
+
+# Ignore unnecessary binaries
+**/.bin/**
+
+# Ignore test files and fixtures
+**/__tests__/**
+**/*.test.ts
+**/*.test.js
+**/*.spec.ts
+**/*.spec.js
+**/test-fixtures/**
+**/fixtures/**
+
+# Ignore documentation files
+**/*.md
+!README.md
+!CHANGELOG.md
+
+# Ignore source maps in node_modules
+node_modules/**/*.map
+
+# Ignore unnecessary binaries
+**/.bin/**
+
+# Ignore test files and fixtures
+**/__tests__/**
+**/*.test.ts
+**/*.test.js
+**/*.spec.ts
+**/*.spec.js
+**/test-fixtures/**
+**/fixtures/**
+
+# Ignore documentation files
+**/*.md
+!README.md
+!CHANGELOG.md
+
+# Ignore source maps in node_modules
+node_modules/**/*.map
+
+# Ignore unnecessary binaries
+**/.bin/**
+
+# Ignore test files and fixtures
+**/__tests__/**
+**/*.test.ts
+**/*.test.js
+**/*.spec.ts
+**/*.spec.js
+**/test-fixtures/**
+**/fixtures/**
+
+# Ignore documentation files
+**/*.md
+!README.md
+!CHANGELOG.md
+
+# Ignore source maps in node_modules
+node_modules/**/*.map
+
+# Ignore unnecessary binaries
+**/.bin/**
+
+# Ignore test files and fixtures
+**/__tests__/**
+**/*.test.ts
+**/*.test.js
+**/*.spec.ts
+**/*.spec.js
+**/test-fixtures/**
+**/fixtures/**
+
+# Ignore documentation files
+**/*.md
+!README.md
+!CHANGELOG.md
+
+# Ignore source maps in node_modules
+node_modules/**/*.map
+
+# Ignore unnecessary binaries
+**/.bin/**
+
+# Ignore test files and fixtures
+**/__tests__/**
+**/*.test.ts
+**/*.test.js
+**/*.spec.ts
+**/*.spec.js
+**/test-fixtures/**
+**/fixtures/**
+
+# Ignore documentation files
+**/*.md
+!README.md
+!CHANGELOG.md
+
+# Ignore source maps in node_modules
+node_modules/**/*.map
+
+# Ignore unnecessary binaries
+**/.bin/**
+
+# Ignore test files and fixtures
+**/__tests__/**
+**/*.test.ts
+**/*.test.js
+**/*.spec.ts
+**/*.spec.js
+**/test-fixtures/**
+**/fixtures/**
+
+# Ignore documentation files
+**/*.md
+!README.md
+!CHANGELOG.md
+
+# Ignore source maps in node_modules
+node_modules/**/*.map
+
+# Ignore unnecessary binaries
+**/.bin/**
+
+# Ignore test files and fixtures
+**/__tests__/**
+**/*.test.ts
+**/*.test.js
+**/*.spec.ts
+**/*.spec.js
+**/test-fixtures/**
+**/fixtures/**
+
+# Ignore documentation files
+**/*.md
+!README.md
+!CHANGELOG.md
+
+# Ignore source maps in node_modules
+node_modules/**/*.map
+
+# Ignore unnecessary binaries
+**/.bin/**
+
+# Ignore test files and fixtures
+**/__tests__/**
+**/*.test.ts
+**/*.test.js
+**/*.spec.ts
+**/*.spec.js
+**/test-fixtures/**
+**/fixtures/**
+
+# Ignore documentation files
+**/*.md
+!README.md
+!CHANGELOG.md
+
+# Ignore source maps in node_modules
+node_modules/**/*.map
+
+# Ignore unnecessary binaries
+**/.bin/**

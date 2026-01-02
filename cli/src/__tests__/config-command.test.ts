@@ -11,7 +11,7 @@ vi.mock("fs/promises", async () => {
 	const actual = await vi.importActual<typeof import("fs/promises")>("fs/promises")
 	return {
 		...actual,
-		readFile: vi.fn(async (filePath: string | Buffer | URL, encoding?: BufferEncoding | null) => {
+		readFile: vi.fn(async (filePath: any, encoding?: any) => {
 			// If reading schema.json, return a minimal valid schema
 			if (typeof filePath === "string" && filePath.includes("schema.json")) {
 				return JSON.stringify({
@@ -21,13 +21,10 @@ vi.mock("fs/promises", async () => {
 				})
 			}
 			// Otherwise use the actual implementation
-			return actual.readFile(filePath, encoding as BufferEncoding)
+			return actual.readFile(filePath, encoding)
 		}),
 	}
 })
-
-// Mock environment variables to avoid ephemeral mode
-vi.stubEnv("KILOCODE_EPHEMERAL", "false")
 
 describe("Config Command", () => {
 	let testDir: string

@@ -1,0 +1,59 @@
+name: Index Code to Quadrant
+
+on:
+  push:
+    branches: [main, develop, 'feature/**']
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  index-code:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for incremental indexing
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build code-index-cli
+        run: pnpm --filter @kilocode/code-index-cli build
+
+      - name: Index code to Quadrant
+        env:
+          QDRANT_URL: ${{ secrets.QDRANT_URL }}
+          QDRANT_API_KEY: ${{ secrets.QDRANT_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          node packages/code-index-cli/dist/index.js \
+            --workspace . \
+            --qdrant-url $QDRANT_URL \
+            --qdrant-api-key $QDRANT_API_KEY \
+            --embedder openai \
+            --embedder-key $OPENAI_API_KEY \
+            --embedder-model text-embedding-3-small \
+            --incremental \
+            --verbose
+
+      - name: Report status
+        if: failure()
+        run: |
+          echo "❌ Indexing failed. Check logs above."
+          exit 1
+
+
+
+
+
+
+
+
+
+

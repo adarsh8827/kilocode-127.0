@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Weibo, Inc.
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package ai.kilocode.jetbrains.core
 
 import ai.kilocode.jetbrains.actors.MainThreadBulkEdits
@@ -251,7 +255,7 @@ class RPCManager(
         rpcProtocol.set(ServiceProxyRegistry.MainContext.MainThreadUrls, MainThreadUrls())
 
         // MainThreadLanguageFeatures
-        rpcProtocol.set(ServiceProxyRegistry.MainContext.MainThreadLanguageFeatures, MainThreadLanguageFeatures(project))
+        rpcProtocol.set(ServiceProxyRegistry.MainContext.MainThreadLanguageFeatures, MainThreadLanguageFeatures())
 
         // MainThreadFileSystem
         rpcProtocol.set(ServiceProxyRegistry.MainContext.MainThreadFileSystem, MainThreadFileSystem())

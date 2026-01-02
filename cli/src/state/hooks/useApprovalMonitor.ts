@@ -15,7 +15,7 @@
 
 import { useEffect, useRef } from "react"
 import { useAtomValue, useSetAtom, useStore } from "jotai"
-import { lastAskMessageAtom, yoloModeAtom } from "../atoms/ui.js"
+import { lastAskMessageAtom } from "../atoms/ui.js"
 import { setPendingApprovalAtom, clearPendingApprovalAtom, approvalProcessingAtom } from "../atoms/approval.js"
 import {
 	autoApproveReadAtom,
@@ -89,7 +89,6 @@ export function useApprovalMonitor(): void {
 	const autoApproveQuestionTimeout = useAtomValue(autoApproveQuestionTimeoutAtom)
 	const autoApproveTodo = useAtomValue(autoApproveTodoAtom)
 	const isCIMode = useAtomValue(ciModeAtom)
-	const isYoloMode = useAtomValue(yoloModeAtom)
 
 	const { approve, reject } = useApprovalHandler()
 	const approvalTelemetry = useApprovalTelemetry()
@@ -199,7 +198,7 @@ export function useApprovalMonitor(): void {
 			autoApprovalHandledRef.current.add(lastAskMessage.ts)
 
 			// Get approval decision from service
-			const decision = getApprovalDecision(lastAskMessage, config, isCIMode, isYoloMode)
+			const decision = getApprovalDecision(lastAskMessage, config, isCIMode)
 
 			// Execute based on decision
 			if (decision.action === "auto-approve") {
@@ -255,7 +254,6 @@ export function useApprovalMonitor(): void {
 		reject,
 		config,
 		isCIMode,
-		isYoloMode,
 		store,
 		approvalTelemetry,
 	])

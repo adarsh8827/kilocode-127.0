@@ -8,19 +8,18 @@
 		},
 		"clean:kilocode": {
 			"outputs": ["dist/kilocode/**"],
-			"inputs": ["../bin-unpacked/extension/**"],
-			"dependsOn": ["clean"]
+			"inputs": ["../../bin-unpacked/extension/**"]
 		},
 		"copy:kilocode": {
 			"outputs": ["dist/kilocode/**"],
-			"inputs": ["../bin-unpacked/extension/**"],
+			"inputs": ["../../bin-unpacked/extension/**"],
 			"dependsOn": ["clean:kilocode", "kilo-code#vsix:unpacked"]
 		},
 		"build": {
 			"cache": false,
 			"outputs": ["dist/**"],
 			"inputs": ["src/**"],
-			"dependsOn": ["copy:kilocode"]
+			"dependsOn": ["clean", "copy:kilocode"]
 		},
 		"start": {
 			"cache": false,

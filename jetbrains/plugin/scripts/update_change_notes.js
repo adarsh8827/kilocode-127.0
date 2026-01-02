@@ -29,9 +29,7 @@ function updateChangeNotes() {
 		const changelogContent = readFileSync(changelogPath, "utf8")
 
 		// Find the version section in changelog
-		// Support multiple formats: ## [vX.X.X], ## [X.X.X], ## X.X.X
-		const escapedVersion = version.replaceAll(".", "\\.")
-		const versionPattern = new RegExp(`## \\[?v?${escapedVersion}\\]?([\\s\\S]*?)(?=## \\[?v?\\d|$)`)
+		const versionPattern = new RegExp(`## \\[v${version.replace(/\./g, "\\.")}\\]([\\s\\S]*?)(?=## \\[v|$)`)
 		const changelogVersionMatch = changelogContent.match(versionPattern)
 
 		if (!changelogVersionMatch) {
