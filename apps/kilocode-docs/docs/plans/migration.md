@@ -328,7 +328,7 @@ Switch to **Kilo Teams** or **Kilo Enterprise** from other AI coding tools and e
 
 ### Getting Migration Help
 
-- **Email:** migrations@kilocode.ai
+- **Email:** migrations@kilo.ai
 - **Discord:** Join our migration support channel
 - **Consultation:** Schedule free migration planning call
 - **Documentation:** Comprehensive migration guides
@@ -362,4 +362,4 @@ Switch to **Kilo Teams** or **Kilo Enterprise** from other AI coding tools and e
 - [Explore team management features](/plans/team-management)
 - [Understand billing and pricing](/plans/billing)
 
-Ready to make the switch? Contact our migration team at migrations@kilocode.ai to plan your transition to transparent AI coding.
+Ready to make the switch? Contact our migration team at migrations@kilo.ai to plan your transition to transparent AI coding.
