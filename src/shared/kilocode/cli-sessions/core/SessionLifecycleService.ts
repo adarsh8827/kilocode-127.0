@@ -421,6 +421,12 @@ export class SessionLifecycleService {
 				const mode = await this.getMode(taskId)
 				const model = await this.getModel(taskId)
 
+				// Get parent task ID and resolve parent session ID
+				const parentTaskId = historyItem?.parentTaskId
+				const parentSessionId = parentTaskId
+					? this.persistenceManager.getSessionForTask(parentTaskId)
+					: undefined
+
 				const session = await this.sessionClient.create({
 					title,
 					created_on_platform: this.platform,
@@ -428,6 +434,7 @@ export class SessionLifecycleService {
 					organization_id: await this.getOrganizationId(taskId),
 					last_mode: mode,
 					last_model: model,
+					parent_session_id: parentSessionId,
 				})
 
 				sessionId = session.session_id

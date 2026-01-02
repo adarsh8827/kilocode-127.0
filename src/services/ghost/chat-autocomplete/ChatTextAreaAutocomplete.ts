@@ -91,7 +91,7 @@ export class ChatTextAreaAutocomplete {
 				context,
 			)
 
-			const cleanedSuggestion = this.cleanSuggestion(response, userText)
+			const cleanedSuggestion = this.cleanSuggestion(response, userText, visibleCodeContext)
 
 			// Track if suggestion was filtered or returned
 			if (!cleanedSuggestion) {
@@ -199,7 +199,11 @@ TASK: Complete the user's message naturally.
 	 * Clean the suggestion by removing any leading repetition of user text
 	 * and filtering out unwanted patterns like comments
 	 */
-	private cleanSuggestion(suggestion: string, userText: string): string {
+	private cleanSuggestion(
+		suggestion: string,
+		userText: string,
+		visibleCodeContext?: VisibleCodeContext,
+	): string {
 		let cleaned = suggestion
 
 		cleaned = removePrefixOverlap(cleaned, userText)
@@ -216,7 +220,49 @@ TASK: Complete the user's message naturally.
 			return ""
 		}
 
+		// Prevent autocomplete from showing suggestions duplicating the previous or next line
+		if (visibleCodeContext && this.isDuplicateOfAdjacentLine(cleaned, visibleCodeContext)) {
+			return ""
+		}
+
 		return cleaned
+	}
+
+	/**
+	 * Check if suggestion duplicates the previous or next line from visible code context
+	 */
+	private isDuplicateOfAdjacentLine(suggestion: string, visibleCodeContext: VisibleCodeContext): boolean {
+		if (!visibleCodeContext.editors || visibleCodeContext.editors.length === 0) {
+			return false
+		}
+
+		const trimmedSuggestion = suggestion.trim()
+
+		// Check all visible editors for duplicate lines
+		for (const editor of visibleCodeContext.editors) {
+			for (const range of editor.visibleRanges) {
+				const lines = range.content.split("\n")
+				if (lines.length === 0) continue
+
+				// Check if suggestion duplicates the last line (previous line)
+				const lastLine = lines[lines.length - 1]?.trim()
+				if (lastLine && trimmedSuggestion === lastLine) {
+					return true
+				}
+
+				// Check if suggestion duplicates the first line (next line)
+				// Note: In chat autocomplete, we don't have a clear "next line" concept,
+				// but we can check if the suggestion matches any visible line
+				for (const line of lines) {
+					const trimmedLine = line.trim()
+					if (trimmedLine && trimmedSuggestion === trimmedLine) {
+						return true
+					}
+				}
+			}
+		}
+
+		return false
 	}
 
 	/**

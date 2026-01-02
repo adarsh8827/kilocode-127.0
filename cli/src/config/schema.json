@@ -49,11 +49,11 @@
 							"default": true,
 							"description": "Auto approve read operations"
 						},
-						"outside": {
-							"type": "boolean",
-							"default": true,
-							"description": "Auto approve reads outside workspace"
-						}
+					"outside": {
+						"type": "boolean",
+						"default": false,
+						"description": "Auto approve reads outside workspace"
+					}
 					}
 				},
 				"write": {
