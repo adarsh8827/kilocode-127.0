@@ -82,6 +82,10 @@ export class GhostServiceManager {
 			const { kiloCodeWrapperJetbrains } = getKiloCodeWrapperProperties()
 			this.settings.enableAutoTrigger = !kiloCodeWrapperJetbrains
 		}
+		// Enable chat autocomplete by default
+		if (this.settings.enableChatAutocomplete == undefined) {
+			this.settings.enableChatAutocomplete = true
+		}
 
 		await this.updateGlobalContext()
 		this.updateStatusBar()

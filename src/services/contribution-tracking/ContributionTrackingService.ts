@@ -169,6 +169,10 @@ export class ContributionTrackingService {
 		let currentLine = 0
 
 		for (const line of lines) {
+			// Type guard: ensure line is a string before calling startsWith
+			if (typeof line !== "string") {
+				continue
+			}
 			if (line.startsWith("@@")) {
 				// Parse hunk header to get line numbers
 				// Format: @@ -oldStart,oldCount +newStart,newCount @@

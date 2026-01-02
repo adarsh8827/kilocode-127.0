@@ -107,6 +107,28 @@ export async function presentAssistantMessage(cline: Task) {
 		return
 	}
 
+	// Filter duplicate tool calls by ID (for native protocol)
+	// This prevents the same tool call from being processed multiple times
+	if (block.type === "tool_use" && (block as any).id) {
+		const toolCallId = (block as any).id
+		// Initialize seen tool call IDs set if not exists
+		if (!cline.seenToolCallIds) {
+			cline.seenToolCallIds = new Set<string>()
+		}
+		// Skip if we've already processed this tool call ID
+		if (cline.seenToolCallIds.has(toolCallId)) {
+			console.warn(`[presentAssistantMessage] Skipping duplicate tool_use with id: ${toolCallId}`)
+			cline.currentStreamingContentIndex++
+			cline.presentAssistantMessageLocked = false
+			presentAssistantMessage(cline).catch((err) => {
+				console.error(`[Task#presentAssistantMessage] Error in recursive call: ${err.message}`, err)
+			})
+			return
+		}
+		// Mark this tool call ID as seen
+		cline.seenToolCallIds.add(toolCallId)
+	}
+
 	switch (block.type) {
 		case "mcp_tool_use": {
 			// Handle native MCP tool calls (from mcp_serverName_toolName dynamic tools)
@@ -332,10 +354,13 @@ export async function presentAssistantMessage(cline: Task) {
 						// Extract the potential tag name.
 						let tagContent: string
 
-						if (possibleTag.startsWith("</")) {
+						// Type guard: ensure possibleTag is a string before calling startsWith
+						if (typeof possibleTag === "string" && possibleTag.startsWith("</")) {
 							tagContent = possibleTag.slice(2).trim()
-						} else {
+						} else if (typeof possibleTag === "string") {
 							tagContent = possibleTag.slice(1).trim()
+						} else {
+							continue // Skip if not a string
 						}
 
 						// Check if tagContent is likely an incomplete tag name
@@ -1229,7 +1254,7 @@ async function checkpointSaveAndMark(task: Task) {
 	try {
 		// kilocode_change: order changed to prevent second execution while still awaiting the save
 		task.currentStreamingDidCheckpoint = true
-		await task.checkpointSave(true)
+		await task.checkpointSave(false) // Don't allow empty checkpoints
 	} catch (error) {
 		console.error(`[Task#presentAssistantMessage] Error saving checkpoint: ${error.message}`, error)
 	}

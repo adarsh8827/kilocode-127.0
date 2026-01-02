@@ -70,6 +70,9 @@ export class NativeToolCallParser {
 		}
 	>()
 
+	// Track seen tool call IDs to prevent duplicates (keyed by ID)
+	private static seenToolCallIds = new Set<string>()
+
 	/**
 	 * Process a raw tool call chunk from the API stream.
 	 * Handles tracking, buffering, and emits start/delta/end events.
@@ -90,6 +93,12 @@ export class NativeToolCallParser {
 
 		// Initialize new tool call tracking when we receive an id
 		if (id && !tracked) {
+			// Filter duplicate tool calls by ID
+			if (this.seenToolCallIds.has(id)) {
+				console.warn(`[NativeToolCallParser] Skipping duplicate tool call with id: ${id}`)
+				return events
+			}
+			this.seenToolCallIds.add(id)
 			tracked = {
 				id,
 				name: name || "",
@@ -191,6 +200,7 @@ export class NativeToolCallParser {
 	 */
 	public static clearRawChunkState(): void {
 		this.rawChunkTracker.clear()
+		this.seenToolCallIds.clear()
 	}
 
 	/**

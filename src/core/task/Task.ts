@@ -342,6 +342,9 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 	// Native tool call streaming state (track which index each tool is at)
 	private streamingToolCallIndices: Map<string, number> = new Map()
 
+	// Track seen tool call IDs to prevent duplicate processing
+	seenToolCallIds?: Set<string>
+
 	// Cached model info for current streaming session (set at start of each API request)
 	// This prevents excessive getModel() calls during tool execution
 	cachedStreamingModel?: { id: string; info: ModelInfo }
@@ -2616,6 +2619,7 @@ export class Task extends EventEmitter<TaskEvents> implements TaskLike {
 				this.userMessageContentReady = false
 				this.didRejectTool = false
 				this.didAlreadyUseTool = false
+				this.seenToolCallIds = new Set<string>() // Reset seen tool call IDs for duplicate filtering
 				// Reset tool failure flag for each new assistant turn - this ensures that tool failures
 				// only prevent attempt_completion within the same assistant message, not across turns
 				// (e.g., if a tool fails, then user sends a message saying "just complete anyway")

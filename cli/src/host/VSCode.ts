@@ -2012,23 +2012,8 @@ export function createVSCodeAPIMock(extensionRootPath: string, workspacePath: st
 						uriOrEntries: Uri | [Uri, Diagnostic[] | undefined][],
 						diagnosticsOrUndefined?: Diagnostic[] | undefined,
 					) => {
-						if (Array.isArray(uriOrEntries)) {
-							// Handle array of entries
-							for (const [uri, diags] of uriOrEntries) {
-								if (diags === undefined) {
-									diagnostics.delete(uri.toString())
-								} else {
-									diagnostics.set(uri.toString(), diags)
-								}
-							}
-						} else {
-							// Handle single URI
-							if (diagnosticsOrUndefined === undefined) {
-								diagnostics.delete(uriOrEntries.toString())
-							} else {
-								diagnostics.set(uriOrEntries.toString(), diagnosticsOrUndefined)
-							}
-						}
+						// In CLI mode, skip diagnostic operations for improved performance
+						// No-op: don't actually store diagnostics
 					},
 					delete: (uri: Uri) => {
 						diagnostics.delete(uri.toString())

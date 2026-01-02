@@ -254,8 +254,12 @@ export const MarkdownText: React.FC<MarkdownTextProps> = ({ children, theme, ...
 		}
 
 		// Detect if this is a new chunk (content grew and old content is a prefix)
+		// Type guard: ensure both are strings before calling startsWith
 		const isNewChunk =
-			children.length > previousContentRef.current.length && children.startsWith(previousContentRef.current)
+			typeof children === "string" &&
+			typeof previousContentRef.current === "string" &&
+			children.length > previousContentRef.current.length &&
+			children.startsWith(previousContentRef.current)
 
 		if (isNewChunk) {
 			// New chunk detected - calculate adaptive speed
